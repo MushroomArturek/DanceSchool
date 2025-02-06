@@ -1,23 +1,37 @@
-   <template>
-     <div id="app">
-       <h1>Witamy w DanceSchool</h1>
-       <StudentsList />
-     </div>
-   </template>
+<template>
+  <div class="dashboard">
+    <SideMenu />
+    <MainContent />
+  </div>
+</template>
 
-   <script>
-   import StudentsList from './components/StudentsList.vue';
+<script>
+import SideMenu from "./components/SideMenu.vue";
+import MainContent from "./components/MainContent.vue";
 
-   export default {
-     components: {
-       StudentsList
-     }
-   };
-   </script>
+export default {
+  name: "App",
+  components: {
+    SideMenu,
+    MainContent,
+  },
+};
+</script>
 
-   <style>
-   #app {
-     text-align: center;
-     margin-top: 20px;
-   }
-   </style>
+<style>
+/* Body i dashboard global styles */
+body {
+  margin: 0;
+  font-family: "Open Sans", sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #515151;
+  background-color: #e9edf4;
+}
+
+.dashboard {
+  display: flex;
+  min-height: 100vh; /* Pełna wysokość aplikacji */
+}
+</style>

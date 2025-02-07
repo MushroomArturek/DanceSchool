@@ -35,9 +35,15 @@ class RegisterUserView(generics.CreateAPIView):
         user = serializer.save()
         return Response({
             "user": {
-                "username": user.username,
                 "email": user.email,
                 "role": user.role,
+            },
+            "student": {
+                "first_name": user.student.first_name,
+                "last_name": user.student.last_name,
+                "email": user.student.email,
+                "phone_number": user.student.phone_number,
+                "date_of_birth": user.student.date_of_birth,
             }
         }, status=status.HTTP_201_CREATED)
 

@@ -5,14 +5,36 @@ from .models import Student, Class, Instructor, Booking, CustomUser
 # Auth
 
 class RegisterUserSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(required=True)  # Dane studenta
+    last_name = serializers.CharField(required=True)
+    phone_number = serializers.CharField(required=True)
+    date_of_birth = serializers.DateField(required=True)
+
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'role']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['email', 'password', 'first_name', 'last_name', 'phone_number', 'date_of_birth']
+        extra_kwargs = {'password': {'write_only': True}}  # Hasło zapisujemy tylko w modelu "CustomUser"
 
     def create(self, validated_data):
-        return CustomUser.objects.create_user(**validated_data)
+        # Oddzielamy dane użytkownika i studenta
+        first_name = validated_data.pop('first_name')
+        last_name = validated_data.pop('last_name')
+        phone_number = validated_data.pop('phone_number')
+        date_of_birth = validated_data.pop('date_of_birth')
 
+        # Tworzymy użytkownika
+        user = CustomUser.objects.create_user(role='student', **validated_data)
+
+        # Tworzymy studenta i wiążemy go z użytkownikiem
+        Student.objects.create(
+            user=user,
+            first_name=first_name,
+            last_name=last_name,
+            email=user.email,  # Student ma ten sam email co użytkownik
+            phone_number=phone_number,
+            date_of_birth=date_of_birth
+        )
+        return user
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
@@ -48,7 +70,7 @@ class ClassCreateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=True)
     style = serializers.CharField(required=True)
     max_participants = serializers.IntegerField(required=True)
-    instructor = serializers.CharField(required=True)
+    instructor = serializers.PrimaryKeyRelatedField(queryset=Instructor.objects.all())
     start_time = serializers.DateTimeField(required=True)
     end_time = serializers.DateTimeField(required=True)
 
@@ -68,7 +90,7 @@ class ClassUpdateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
     style = serializers.CharField(required=False)
     max_participants = serializers.IntegerField(required=False)
-    instructor = serializers.CharField(required=False)
+    instructor = serializers.PrimaryKeyRelatedField(queryset=Instructor.objects.all())
 
     class Meta:
         model = Class

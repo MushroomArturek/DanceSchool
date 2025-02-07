@@ -2,8 +2,8 @@
   <div class="dashboard-nav">
     <header>
       <a href="#" class="brand-logo">
-        <i class="fas fa-anchor"></i>
-        <span>BRAND</span>
+        <i class="fa-solid fa-music"></i>
+        <span>De la Salsa</span>
       </a>
     </header>
     <nav class="dashboard-nav-list">
@@ -27,12 +27,37 @@
         <i class="fas fa-cogs"></i> Settings
       </router-link>
       <div class="nav-item-divider"></div>
-      <a href="#" class="dashboard-nav-item">
+      <!-- Przycisk Logowanie widoczny tylko dla niezalogowanych -->
+      <router-link v-if="!authState.isLoggedIn" to="/login" class="dashboard-nav-item">
+        <i class="fas fa-sign-in-alt"></i> Logowanie
+      </router-link>
+      <!-- Przycisk Logout widoczny tylko dla zalogowanych -->
+      <a v-if="authState.isLoggedIn" href="#" class="dashboard-nav-item" @click="handleLogout">
         <i class="fas fa-sign-out-alt"></i> Logout
       </a>
     </nav>
   </div>
 </template>
+
+<script>
+import { authState, updateAuthState } from "../state/authState";
+import { logout } from "../api/auth.js";
+
+export default {
+  setup() {
+    return {
+      authState,
+    };
+  },
+  methods: {
+    handleLogout() {
+      logout(); // Wywołanie funkcji logout (czyszczenie tokenów)
+      updateAuthState(); // Aktualizacja stanu globalnego
+      this.$router.push("/login"); // Przekierowanie na stronę logowania
+    },
+  },
+};
+</script>
 
 <style scoped>
 /* Styles for the sidebar (dashboard-nav) */

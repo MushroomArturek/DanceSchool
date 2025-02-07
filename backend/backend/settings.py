@@ -144,20 +144,20 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.SessionAuthentication',  # Logowanie użytkowników przez sesję
-    #     'rest_framework.authentication.BasicAuthentication',  # Możesz dodać JWT, jeśli chcesz
-    # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     # 'rest_framework.permissions.IsAuthenticated',  # Domyślne: użytkownik musi być zalogowany
-    #     'rest_framework.permissions.AllowAny',  # Umożliwia dostęp dla wszystkich
-    # ]
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Logowanie użytkowników przez sesję
+        'rest_framework.authentication.BasicAuthentication',  # Możesz dodać JWT, jeśli chcesz
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        # 'rest_framework.permissions.IsAuthenticated',  # Domyślne: użytkownik musi być zalogowany
+        'rest_framework.permissions.AllowAny',  # Umożliwia dostęp dla wszystkich
+    ]
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
 }
 
 

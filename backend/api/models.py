@@ -1,3 +1,4 @@
+from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -6,39 +7,88 @@ from django.db import models
 
 # Definicja możliwych ról użytkowników
 class Role(models.TextChoices):
-    GUEST = "guest", "Gość"
     STUDENT = "student", "Uczeń"
     INSTRUCTOR = "instructor", "Instruktor"
     ADMIN = "admin", "Administrator"
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        """
+        Tworzy i zapisuje zwykłego użytkownika z podanym adresem email i hasłem.
+        """
+        if not email:
+            raise ValueError("Użytkownik musi mieć podany adres email")
+        email = self.normalize_email(email)  # Normalizacja adresu email
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
+    def create_superuser(self, email, password=None, **extra_fields):
+        """
+        Tworzy i zapisuje superużytkownika z podanym adresem email i hasłem.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser musi mieć is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser musi mieć is_superuser=True.')
+
+        return self.create_user(email, password, **extra_fields)
+
+
+# CustomUser - niestandardowy model użytkownika
 class CustomUser(AbstractUser):
+    username = None  # Usuwamy pole username
+    email = models.EmailField(unique=True)  # Ustawiamy email jako unikalny identyfikator
     role = models.CharField(
         max_length=50,
-        choices=Role.choices,
-        default=Role.GUEST,
+        choices=[  # Role użytkownika
+            ('student', 'Student'),
+            ('instructor', 'Instructor'),
+            ('admin', 'Admin'),
+        ],
+        default='student',  # Domyślna rola to student
         help_text="Rola użytkownika w systemie",
     )
 
+    USERNAME_FIELD = "email"  # Logowanie używa maila
+    REQUIRED_FIELDS = []  # Pozostawiamy puste wymagane pola (oprócz hasła)
+
+    # Przypisanie menedżera
+    objects = CustomUserManager()
+
     def __str__(self):
-        return f"{self.username} ({self.role})"
+        return f"{self.email} ({self.role})"
 
 
 class Student(models.Model):
+    user = models.OneToOneField(
+        'CustomUser', on_delete=models.CASCADE, related_name='student'
+    )  # Student jest powiązany z jednym użytkownikiem
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=15)
+    date_of_birth = models.DateField()  # Dodaj pole daty urodzenia
     joined_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
 
+
 class Class(models.Model):
     name = models.CharField(max_length=200)
     style = models.CharField(max_length=100, help_text="Styl tańca (np. Salsa, Waltz)")
     max_participants = models.PositiveIntegerField(help_text="Maksymalna liczba uczestników")
-    instructor = models.CharField(max_length=200, help_text="Imię i nazwisko nauczyciela")
+    instructor = models.ForeignKey(
+        'Instructor',  # Zakładamy, że model Instructor jest w tej samej aplikacji
+        on_delete=models.CASCADE,
+        related_name='classes',
+        help_text="Wybierz instruktora spośród istniejących"
+    )
     start_time = models.DateTimeField(help_text="Data i czas rozpoczęcia zajęć")
     end_time = models.DateTimeField(help_text="Data i czas zakończenia zajęć")
     room = models.CharField(max_length=50, help_text="Sala zajęciowa", blank=True, null=True)
@@ -47,12 +97,8 @@ class Class(models.Model):
         return f"{self.name} ({self.style})"
 
     def available_slots(self):
-        """
-        Oblicza wolne miejsca na zajęciach.
-        """
         booked_count = self.bookings.filter(status="confirmed").count()  # Liczba potwierdzonych rezerwacji
         return self.max_participants - booked_count
-
 
 class Instructor(models.Model):
     first_name = models.CharField(max_length=50, help_text="Imię instruktora")

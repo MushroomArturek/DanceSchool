@@ -1,5 +1,8 @@
 <template>
   <div class="dashboard-app">
+    <div class="dashboard-toolbar">
+      Pasek nawigacyjny / nagłówek (jeśli jest potrzebny)
+    </div>
     <div class="dashboard-content">
       <router-view />
     </div>

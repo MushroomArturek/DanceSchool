@@ -8,10 +8,10 @@
     </header>
     <nav class="dashboard-nav-list">
       <router-link to="/" class="dashboard-nav-item">
-        <i class="fas fa-home"></i> Home
+        <i class="fas fa-home"></i> Strona Główna
       </router-link>
       <router-link to="/schedule" class="dashboard-nav-item">
-        <i class="fas fa-tachometer-alt"></i> Schedule
+        <i class="fa-solid fa-calendar-days"></i> Harmonogram zajęć
       </router-link>
       <div class="dashboard-nav-dropdown">
         <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle">
@@ -24,7 +24,7 @@
         </div>
       </div>
       <router-link to="/settings" class="dashboard-nav-item">
-        <i class="fas fa-cogs"></i> Settings
+        <i class="fas fa-cogs"></i> Ustawienia konta
       </router-link>
       <div class="nav-item-divider"></div>
       <!-- Przycisk Logowanie widoczny tylko dla niezalogowanych -->
@@ -33,7 +33,7 @@
       </router-link>
       <!-- Przycisk Logout widoczny tylko dla zalogowanych -->
       <a v-if="authState.isLoggedIn" href="#" class="dashboard-nav-item" @click="handleLogout">
-        <i class="fas fa-sign-out-alt"></i> Logout
+        <i class="fas fa-sign-out-alt"></i> Wyloguj się
       </a>
     </nav>
   </div>

@@ -4,6 +4,28 @@ from .models import Student, Class, Instructor, Booking, CustomUser
 
 # Auth
 
+class CustomTokenObtainPairSerializer(serializers.Serializer):
+    # Pole dla tokenów JWT
+    access = serializers.CharField()
+    refresh = serializers.CharField()
+
+    # Pola, które chcesz dodać do odpowiedzi
+    role = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+
+    def validate(self, attrs):
+        # Tylko, jeśli standardowy serializer poprawnie przetworzył dane
+        data = super().validate(attrs)
+        user = CustomUser.objects.get(email=attrs["email"])
+
+        # Dodajemy dane użytkownika do odpowiedzi
+        data["role"] = user.role
+        data["first_name"] = user.first_name
+        data["last_name"] = user.last_name
+
+        return data
+
 class RegisterUserSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True)  # Dane studenta
     last_name = serializers.CharField(required=True)

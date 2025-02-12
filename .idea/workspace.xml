@@ -5,24 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0813e64-47d0-4dd8-b166-26c718622b4b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Login.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/components/Register.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/state/authState.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/components/EventModal.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/api/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0002_class_instructor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/api/migrations/0003_booking.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/api/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/api/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/backend/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/backend/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/db.sqlite3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/backend/db.sqlite3" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/api/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/HomePage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/HomePage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ClassSchedule.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ClassSchedule.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/MainContent.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/MainContent.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/SideMenu.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/SideMenu.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/state/authState.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/state/authState.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,8 +24,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
-        <option value="Vue Composition API Component" />
         <option value="JavaScript File" />
+        <option value="Vue Composition API Component" />
       </list>
     </option>
   </component>
@@ -53,6 +44,9 @@
     &quot;accountId&quot;: &quot;e5af48c9-9cd3-4024-ab64-d00624d163f4&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/frontend/node_modules/@schedule-x/event-modal/dist/core.js" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -62,27 +56,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Artur/Desktop/Github/lawyer_bot-main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AIAssistantPromptsLibrary&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;D:\\JetBrains\\PyCharm 2022.3.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Artur/Desktop/Github/lawyer_bot-main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "ts.external.directory.path": "D:\\JetBrains\\PyCharm 2022.3.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;vue.recent.templates&quot;: [
-      &quot;Vue Composition API Component&quot;
+  "keyToStringList": {
+    "vue.recent.templates": [
+      "Vue Composition API Component"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\Artur\Desktop\Github\DanceSchool\frontend\src\pages" />
@@ -115,11 +109,26 @@
       <workItem from="1738761487443" duration="9591000" />
       <workItem from="1738867800434" duration="8042000" />
       <workItem from="1738876086009" duration="19000" />
-      <workItem from="1738878884952" duration="8425000" />
+      <workItem from="1738878884952" duration="8487000" />
+      <workItem from="1738922840408" duration="2665000" />
+      <workItem from="1739302008970" duration="901000" />
+      <workItem from="1739353148447" duration="12335000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/frontend/src/components/ClassSchedule.vue</url>
+          <line>9</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

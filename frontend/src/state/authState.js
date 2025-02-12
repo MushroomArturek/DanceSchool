@@ -1,25 +1,26 @@
 // authState.js
 import { reactive } from "vue";
 
-// Tworzymy obiekt reaktywny, który śledzi stan logowania
 export const authState = reactive({
-  isLoggedIn: !!localStorage.getItem("access"), // Sprawdzamy czy token istnieje w localStorage
-  role: localStorage.getItem("role") || null, // Przechowuje rolę użytkownika (np. student, instruktor)
-  firstName: localStorage.getItem("firstName") || null, // Przechowuje imię użytkownika
-  lastName: localStorage.getItem("lastName") || null, // Przechowuje nazwisko użytkownika
+  isLoggedIn: !!localStorage.getItem("access"),
+  role: localStorage.getItem("role") || null,
+  email: localStorage.getItem("email") || null,
+  firstName: localStorage.getItem("firstName") || null, // Imię użytkownika
+  lastName: localStorage.getItem("lastName") || null, // Nazwisko użytkownika
 });
 
-// Funkcja, która aktualizuje stan logowania
 export function updateAuthState(userData = null) {
   authState.isLoggedIn = !!localStorage.getItem("access");
   if (userData) {
     authState.role = userData.role || null;
-    authState.firstName = userData.firstName || null;
-    authState.lastName = userData.lastName || null;
+    authState.email = userData.email || null;
+    authState.firstName = userData.firstName || null; // Aktualizacja imienia
+    authState.lastName = userData.lastName || null; // Aktualizacja nazwiska
 
-    // Zapisujemy szczegóły użytkownika w localStorage (opcjonalne, w razie odświeżenia strony)
+    // Zapisujemy dane w localStorage
     localStorage.setItem("role", userData.role);
-    localStorage.setItem("firstName", userData.firstName);
-    localStorage.setItem("lastName", userData.lastName);
+    localStorage.setItem("email", userData.email);
+    localStorage.setItem("firstName", userData.firstName); // Zapisujemy imię
+    localStorage.setItem("lastName", userData.lastName); // Zapisujemy nazwisko
   }
 }

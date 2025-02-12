@@ -1,7 +1,12 @@
 <template>
   <div class="dashboard-app">
     <div class="dashboard-toolbar">
-      Pasek nawigacyjny / nagłówek (jeśli jest potrzebny)
+      <div v-if="authState.isLoggedIn" class="user-info">
+        Zalogowano jako: {{ authState.firstName }} {{ authState.lastName }}
+      </div>
+      <div v-else class="user-info">
+        Niezalogowany
+      </div>
     </div>
     <div class="dashboard-content">
       <router-view />
@@ -10,8 +15,17 @@
 </template>
 
 <script>
+import { authState } from '../state/authState'; // Importujemy stan autoryzacji
+
 export default {
   name: "MainContent",
+  setup() {
+    console.log(authState); // Sprawdzamy zawartość authState w konsoli
+
+    return {
+      authState, // Udostępniamy stan autoryzacji w szablonie
+    };
+  },
 };
 </script>
 
@@ -36,6 +50,12 @@ export default {
   right: 0;
   left: 238px; /* Uwzględnienie sidebar w górnym pasku */
   z-index: 1000;
+}
+
+.user-info {
+  margin-left: auto; /* Przesuwa informację o użytkowniku na prawo */
+  font-size: 16px;
+  color: #333;
 }
 
 .dashboard-content {

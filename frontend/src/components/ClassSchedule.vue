@@ -1,3 +1,4 @@
+Harmonogram 
 <template>
   <div id="calendar-container">
     <h2>Harmonogram Zajęć</h2>
@@ -65,6 +66,7 @@ export default {
           },
         },
         plugins: [createDragAndDropPlugin(), createEventModalPlugin()],
+
       });
 
       const calendarEl = document.getElementById("calendar");
@@ -106,5 +108,16 @@ h2 {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden; /* Obcinaj nadmiar treści */
+}
+
+.sx__close-modal-btn {
+    background-color: #007bff;  /* Kolor tła przycisku */
+    color: white;  /* Kolor tekstu */
+    border: none;  /* Brak ramki */
+    padding: 10px 20px;  /* Padding wokół tekstu */
+    border-radius: 5px;  /* Zaokrąglone rogi */
+    font-size: 16px;  /* Rozmiar czcionki */
+    cursor: pointer;  /* Kursor w postaci ręki przy najechaniu */
+    transition: background-color 0.3s ease;  /* Płynna zmiana koloru tła */
 }
 </style>

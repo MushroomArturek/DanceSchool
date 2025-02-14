@@ -1,5 +1,6 @@
 from rest_framework.exceptions import NotFound
-from rest_framework import generics, status, serializers
+from rest_framework import generics, status, serializers, permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -86,15 +87,19 @@ class StudentListView(generics.ListAPIView):
         # Możesz dodać tutaj filtrowanie
         return Student.objects.all()
 
+
 class StudentUpdateView(generics.UpdateAPIView):
-    model = Student
+    queryset = Student.objects.all()
     serializer_class = StudentUpdateSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
+        # Pobieramy studenta powiązanego z użytkownikiem (używamy usera zalogowanego w request)
         try:
-            return Student.objects.get(pk=self.kwargs["id"])
+            return Student.objects.get(user=self.request.user)  # Powiązany student z zalogowanym użytkownikiem
         except Student.DoesNotExist:
             raise NotFound(detail="Student not found.")
+
 
 class StudentCreateView(generics.CreateAPIView):
     model = Student
@@ -114,6 +119,33 @@ class StudentDetailView(generics.RetrieveAPIView):
             return Student.objects.get(pk=self.kwargs["id"])
         except Student.DoesNotExist:
             raise NotFound(detail="Student not found.")
+
+
+class StudentProfileView(generics.RetrieveAPIView):
+    """ Endpoint zwracający dane studenta powiązanego z zalogowanym użytkownikiem """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+            serializer = StudentSerializer(student)
+            return Response(serializer.data)
+        except Student.DoesNotExist:
+            raise NotFound(detail="Student not found.")
+
+class StudentProfileUpdateView(generics.UpdateAPIView):
+    """ Endpoint do aktualizacji danych studenta """
+    serializer_class = StudentUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        """ Pobiera studenta powiązanego z użytkownikiem """
+        try:
+            return Student.objects.get(user=self.request.user)
+        except Student.DoesNotExist:
+            raise NotFound(detail="Student not found.")
+
 
 class InstructorListView(generics.ListAPIView):
     queryset = Instructor.objects.all()

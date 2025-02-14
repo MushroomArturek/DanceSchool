@@ -62,16 +62,30 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__'  # Serializuj wszystkie pola modelu
 
+
 class StudentUpdateSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(required=False)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
     phone_number = serializers.CharField(required=False)
+    date_of_birth = serializers.DateField(required=False)
 
     class Meta:
         model = Student
         fields = [
-            "email",
+            "first_name",
+            "last_name",
             "phone_number",
+            "date_of_birth",
         ]
+
+    def update(self, instance, validated_data):
+        # Aktualizujemy pola studenta
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.phone_number = validated_data.get('phone_number', instance.phone_number)
+        instance.date_of_birth = validated_data.get('date_of_birth', instance.date_of_birth)
+        instance.save()
+        return instance
 
 class StudentCreateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True)

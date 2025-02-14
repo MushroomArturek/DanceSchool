@@ -23,7 +23,7 @@
           <a href="#" class="dashboard-nav-dropdown-item">Banned</a>
         </div>
       </div>
-      <router-link to="/settings" class="dashboard-nav-item">
+      <router-link to="/profile" class="dashboard-nav-item">
         <i class="fas fa-cogs"></i> Ustawienia konta
       </router-link>
       <div class="nav-item-divider"></div>

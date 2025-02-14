@@ -2,7 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "../pages/HomePage.vue";
 import ClassSchedule from "../components/ClassSchedule.vue";
 import Login from "../components/Login.vue";
-import Register from "../components/Register.vue"; // Nowy komponent strony głównej
+import Register from "../components/Register.vue";
+import UserSettings from "../components/UserSettings.vue"; // Nowy komponent strony głównej
 
 // Definiowanie tras
 const routes = [
@@ -23,6 +24,10 @@ const routes = [
   {
     path: "/register",
     component: Register,
+  },
+  {
+    path: "/profile",
+    component: UserSettings,
   },
 ];
 

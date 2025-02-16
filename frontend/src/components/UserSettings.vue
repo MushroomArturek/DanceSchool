@@ -37,12 +37,11 @@ export default {
     return {
       userData: {
         first_name: "",
-        last_name: "",
         email: "",
         phone_number: "",
         date_of_birth: "",
       },
-      successMessage: "",
+      successMessage: "", // Define successMessage
       errorMessage: "",
     };
   },
@@ -53,7 +52,7 @@ export default {
     async loadUserData() {
       try {
         const response = await axios.get("http://localhost:8000/api/student/profile/", {
-          headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
         });
         this.userData = response.data;
       } catch (error) {
@@ -64,7 +63,7 @@ export default {
     async handleUpdate() {
       try {
         await axios.patch("http://localhost:8000/api/student/profile/update/", this.userData, {
-          headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
+          headers: { Authorization: `Bearer ${localStorage.getItem("access")}` },
         });
         this.successMessage = "Dane zostały zaktualizowane!";
         this.errorMessage = "";

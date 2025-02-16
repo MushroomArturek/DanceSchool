@@ -1,5 +1,5 @@
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 
 
@@ -13,55 +13,32 @@ class Role(models.TextChoices):
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
-        """
-        Tworzy i zapisuje zwykłego użytkownika z podanym adresem email i hasłem.
-        """
         if not email:
-            raise ValueError("Użytkownik musi mieć podany adres email")
-        email = self.normalize_email(email)  # Normalizacja adresu email
+            raise ValueError('The Email field must be set')
+        email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password=None, **extra_fields):
-        """
-        Tworzy i zapisuje superużytkownika z podanym adresem email i hasłem.
-        """
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser musi mieć is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser musi mieć is_superuser=True.')
-
         return self.create_user(email, password, **extra_fields)
 
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    role = models.CharField(max_length=20, choices=[('student', 'Student'), ('instructor', 'Instructor'), ('admin', 'Administrator')], default='student')
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
-# CustomUser - niestandardowy model użytkownika
-class CustomUser(AbstractUser):
-    username = None  # Usuwamy pole username
-    email = models.EmailField(unique=True)  # Ustawiamy email jako unikalny identyfikator
-    role = models.CharField(
-        max_length=50,
-        choices=[  # Role użytkownika
-            ('student', 'Student'),
-            ('instructor', 'Instructor'),
-            ('admin', 'Admin'),
-        ],
-        default='student',  # Domyślna rola to student
-        help_text="Rola użytkownika w systemie",
-    )
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
-    USERNAME_FIELD = "email"  # Logowanie używa maila
-    REQUIRED_FIELDS = []  # Pozostawiamy puste wymagane pola (oprócz hasła)
-
-    # Przypisanie menedżera
     objects = CustomUserManager()
 
     def __str__(self):
-        return f"{self.email} ({self.role})"
+        return self.email
 
 
 class Student(models.Model):

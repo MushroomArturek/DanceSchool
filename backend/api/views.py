@@ -8,19 +8,10 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Student, Instructor, Class, Booking, CustomUser
 from .serializers import StudentSerializer, StudentUpdateSerializer, StudentCreateSerializer, InstructorSerializer, \
     InstructorCreateSerializer, InstructorUpdateSerializer, ClassDetailSerializer, ClassCreateSerializer, \
-    ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer
-
+    ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer
 
 
 # Auth (Pierwsza klasa do serializers?????)
-
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # Dodajemy rolę do tokena
-        token['role'] = user.role
-        return token
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):

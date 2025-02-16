@@ -1,4 +1,3 @@
-Harmonogram 
 <template>
   <div id="calendar-container">
     <h2>Harmonogram Zajęć</h2>
@@ -11,13 +10,11 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import {
   createCalendar,
-  // viewDay,
   viewMonthAgenda,
-  // viewMonthGrid,
   viewWeek,
 } from "@schedule-x/calendar";
-import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
-import { createEventModalPlugin } from "@schedule-x/event-modal";
+import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
+import {createEventModalPlugin} from "@schedule-x/event-modal";
 import "@schedule-x/theme-default/dist/index.css";
 
 export default {
@@ -29,7 +26,17 @@ export default {
     // Funkcja do pobierania zajęć
     const fetchClasses = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/classes"); // Twój endpoint API
+        const token = localStorage.getItem("access"); // Pobierz token z localStorage
+        if (!token) {
+          throw new Error("No access token found");
+        }
+
+        const response = await axios.get("http://localhost:8000/api/classes/", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Dodaj token do nagłówków
+          },
+        });
+
         // Mapowanie zajęć do struktury wydarzeń dla kalendarza
         events.value = response.data.map((item) => ({
           id: item.id,
@@ -66,7 +73,6 @@ export default {
           },
         },
         plugins: [createDragAndDropPlugin(), createEventModalPlugin()],
-
       });
 
       const calendarEl = document.getElementById("calendar");
@@ -111,13 +117,13 @@ h2 {
 }
 
 .sx__close-modal-btn {
-    background-color: #007bff;  /* Kolor tła przycisku */
-    color: white;  /* Kolor tekstu */
-    border: none;  /* Brak ramki */
-    padding: 10px 20px;  /* Padding wokół tekstu */
-    border-radius: 5px;  /* Zaokrąglone rogi */
-    font-size: 16px;  /* Rozmiar czcionki */
-    cursor: pointer;  /* Kursor w postaci ręki przy najechaniu */
-    transition: background-color 0.3s ease;  /* Płynna zmiana koloru tła */
+  background-color: #007bff; /* Kolor tła przycisku */
+  color: white; /* Kolor tekstu */
+  border: none; /* Brak ramki */
+  padding: 10px 20px; /* Padding wokół tekstu */
+  border-radius: 5px; /* Zaokrąglone rogi */
+  font-size: 16px; /* Rozmiar czcionki */
+  cursor: pointer; /* Kursor w postaci ręki przy najechaniu */
+  transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
 }
 </style>

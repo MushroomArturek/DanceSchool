@@ -5,18 +5,33 @@ const API_URL = 'http://localhost:8000/api/auth/'; // Adres API backendu
 // Funkcja do logowania użytkownika
 // auth.js
 async function login(email, password) {
-  const response = await axios.post(`${API_URL}login/`, { email, password });
-  console.log(response.data); // Zobacz, czy dane są poprawnie w odpowiedzi
-  const { access, refresh, role, firstName, lastName } = response.data;
+  try {
+    const response = await axios.post(`${API_URL}login/`, { email, password });
+    console.log('Login response:', response.data); // For debugging
 
-  // Przechowujemy tokeny i dane użytkownika w localStorage
-  localStorage.setItem('access', access);
-  localStorage.setItem('refresh', refresh);
-  localStorage.setItem('role', role);
-  localStorage.setItem('firstName', firstName); // Zapisujemy imię
-  localStorage.setItem('lastName', lastName); // Zapisujemy nazwisko
+    const { access, refresh, role, firstName, lastName, email: userEmail } = response.data;
 
-  return response.data;
+    // Store in localStorage
+    localStorage.setItem('access', access);
+    localStorage.setItem('refresh', refresh);
+    localStorage.setItem('role', role);
+    localStorage.setItem('email', userEmail); // Store email
+    localStorage.setItem('firstName', firstName);
+    localStorage.setItem('lastName', lastName);
+
+    // Return all user data
+    return {
+      access,
+      refresh,
+      role,
+      email: userEmail,
+      firstName,
+      lastName
+    };
+  } catch (error) {
+    console.error('Login error:', error);
+    throw error;
+  }
 }
 
 async function register(userData) {

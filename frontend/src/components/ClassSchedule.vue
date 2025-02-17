@@ -1,7 +1,7 @@
 <template>
   <div id="calendar-container">
     <h2>Harmonogram Zajęć</h2>
-    <div id="calendar"></div> <!-- Kontener na kalendarz -->
+    <div id="calendar"></div>
   </div>
 </template>
 
@@ -13,50 +13,66 @@ import {
   viewMonthAgenda,
   viewWeek,
 } from "@schedule-x/calendar";
-import {createDragAndDropPlugin} from "@schedule-x/drag-and-drop";
-import {createEventModalPlugin} from "@schedule-x/event-modal";
+import { createDragAndDropPlugin } from "@schedule-x/drag-and-drop";
+import { createEventModalPlugin } from "@schedule-x/event-modal";
+import { createEventRecurrencePlugin } from "@schedule-x/event-recurrence";
 import "@schedule-x/theme-default/dist/index.css";
 
 export default {
   name: "ClassSchedule",
   setup() {
-    const calendar = ref(null); // Referencja do kalendarza
-    const events = ref([]); // Lista wydarzeń
+    const calendar = ref(null);
+    const events = ref([]);
 
-    // Funkcja do pobierania zajęć
     const fetchClasses = async () => {
       try {
-        const token = localStorage.getItem("access"); // Pobierz token z localStorage
+        const token = localStorage.getItem("access");
         if (!token) {
           throw new Error("No access token found");
         }
 
         const response = await axios.get("http://localhost:8000/api/classes/", {
           headers: {
-            Authorization: `Bearer ${token}`, // Dodaj token do nagłówków
+            Authorization: `Bearer ${token}`,
           },
         });
 
         // Mapowanie zajęć do struktury wydarzeń dla kalendarza
-        events.value = response.data.map((item) => ({
-          id: item.id,
-          title: `${item.name} (${item.style})`,
-          start: item.start_time,
-          end: item.end_time,
-          description: `Prowadzący: ${item.instructor}, Sala: ${item.room}`,
-        }));
+        events.value = response.data.map((item) => {
+          const baseEvent = {
+            id: item.id,
+            title: `${item.name} (${item.style})`,
+            description: `Prowadzący: ${item.instructor}, Sala: ${item.room}`,
+          };
+
+          if (item.is_recurring) {
+            return {
+              ...baseEvent,
+              start: item.start_time, // Używamy start_time zamiast start_hour
+              end: item.end_time, // Używamy end_time zamiast end_hour
+              rrule: `FREQ=WEEKLY;BYDAY=${item.days_of_week}`,
+            };
+          } else {
+            return {
+              ...baseEvent,
+              start: item.start_time,
+              end: item.end_time,
+            };
+          }
+        });
+
+        console.log("Mapped events:", events.value); // Debugging
       } catch (error) {
         console.error("Błąd podczas pobierania zajęć:", error);
       }
     };
 
-    // Funkcja inicjalizująca kalendarz
     const initializeCalendar = () => {
       calendar.value = createCalendar({
         views: [viewMonthAgenda, viewWeek],
-        selectedDate: new Date().toISOString().split("T")[0], // Obecna data
+        selectedDate: new Date().toISOString().split("T")[0],
         defaultView: viewWeek.name,
-        events: events.value, // Dynamiczne wydarzenia
+        events: events.value,
         calendars: {
           default: {
             colorName: "primary",
@@ -72,17 +88,22 @@ export default {
             },
           },
         },
-        plugins: [createDragAndDropPlugin(), createEventModalPlugin()],
+        plugins: [
+          createDragAndDropPlugin(),
+          createEventModalPlugin(),
+          createEventRecurrencePlugin(),
+        ],
       });
 
       const calendarEl = document.getElementById("calendar");
-      calendar.value.render(calendarEl); // Renderowanie kalendarza
+      if (calendarEl) {
+        calendar.value.render(calendarEl);
+      }
     };
 
-    // Pobierz dane o zajęciach i zainicjalizuj kalendarz
     onMounted(async () => {
-      await fetchClasses(); // Pobranie danych z backendu
-      initializeCalendar(); // Inicjalizacja kalendarza
+      await fetchClasses();
+      initializeCalendar();
     });
 
     return {};
@@ -91,39 +112,36 @@ export default {
 </script>
 
 <style scoped>
-/* Kontener całego komponentu */
 #calendar-container {
   padding: 10px;
-  width: 100%; /* Rozciągnij na całą szerokość */
-  height: 100vh; /* Wysokość całego widoku przeglądarki */
+  width: 100%;
+  height: 100vh;
   display: flex;
-  flex-direction: column; /* Ułóż w kolumnie (nagłówek + kalendarz) */
+  flex-direction: column;
   box-sizing: border-box;
 }
 
-/* Nagłówek */
 h2 {
   text-align: center;
   margin-bottom: 20px;
 }
 
-/* Kalendarz */
 #calendar {
-  flex: 1; /* Zajmij całą dostępną przestrzeń */
+  flex: 1;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden; /* Obcinaj nadmiar treści */
+  overflow: hidden;
 }
 
 .sx__close-modal-btn {
-  background-color: #007bff; /* Kolor tła przycisku */
-  color: white; /* Kolor tekstu */
-  border: none; /* Brak ramki */
-  padding: 10px 20px; /* Padding wokół tekstu */
-  border-radius: 5px; /* Zaokrąglone rogi */
-  font-size: 16px; /* Rozmiar czcionki */
-  cursor: pointer; /* Kursor w postaci ręki przy najechaniu */
-  transition: background-color 0.3s ease; /* Płynna zmiana koloru tła */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 </style>

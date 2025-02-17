@@ -92,13 +92,6 @@ class StudentCreateSerializer(serializers.ModelSerializer):
         ]
 
 class ClassCreateSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(required=True)
-    style = serializers.CharField(required=True)
-    max_participants = serializers.IntegerField(required=True)
-    instructor = serializers.PrimaryKeyRelatedField(queryset=Instructor.objects.all())
-    start_time = serializers.DateTimeField(required=True)
-    end_time = serializers.DateTimeField(required=True)
-
     class Meta:
         model = Class
         fields = [
@@ -108,8 +101,23 @@ class ClassCreateSerializer(serializers.ModelSerializer):
             "instructor",
             "start_time",
             "end_time",
+            "days_of_week",
+            "is_recurring",
             "room",
         ]
+
+    def validate(self, data):
+        if data.get('is_recurring') and not data.get('days_of_week'):
+            raise serializers.ValidationError("Dla zajęć cyklicznych wymagane jest pole days_of_week")
+        return data
+
+class ClassDetailSerializer(serializers.ModelSerializer):
+    start_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+
+    class Meta:
+        model = Class
+        fields = "__all__"
 
 class ClassUpdateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
@@ -129,13 +137,6 @@ class ClassUpdateSerializer(serializers.ModelSerializer):
             "room",
         ]
 
-class ClassDetailSerializer(serializers.ModelSerializer):
-    start_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
-    end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
-
-    class Meta:
-        model = Class
-        fields = "__all__"
 
 
 class InstructorCreateSerializer(serializers.ModelSerializer):

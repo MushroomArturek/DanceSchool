@@ -4,11 +4,11 @@
     <form @submit.prevent="handleLogin">
       <div>
         <label for="email">Email:</label>
-        <input type="email" v-model="email" id="email" required />
+        <input type="email" v-model="email" id="email" required/>
       </div>
       <div>
         <label for="password">Hasło:</label>
-        <input type="password" v-model="password" id="password" required />
+        <input type="password" v-model="password" id="password" required/>
       </div>
       <p class="forgot-password">
         <a href="#">Nie pamiętam hasła</a>
@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import { login } from "../api/auth.js"; // Import funkcji do logowania z API
-import { updateAuthState } from "../state/authState"; // Import funkcji stanu globalnego
+import {login} from "../api/auth.js"; // Import funkcji do logowania z API
+import {updateAuthState} from "../state/authState"; // Import funkcji stanu globalnego
 
 export default {
   data() {
@@ -35,21 +35,18 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        // Próba zalogowania użytkownika
-        await login(this.email, this.password);
+        // Get user data from login response
+        const userData = await login(this.email, this.password);
 
-        // Aktualizacja globalnego stanu zalogowania
-        updateAuthState();
+        // Update auth state with user data
+        updateAuthState(userData);
 
-        // Przekierowanie do panelu głównego
+        // Redirect to dashboard
         this.$router.push("/");
       } catch (error) {
-        // Zmieniamy komunikat błędu na bardziej przyjazny dla użytkownika
         this.errorMessage = "Nie udało się zalogować. Sprawdź poprawność danych i spróbuj ponownie.";
-
-        // Możemy dodatkowo logować szczegóły do konsoli w razie debugowania
         console.error("Błąd logowania:", error.message);
-        }
+      }
     },
     goToRegister() {
       // Funkcja przekierowująca do strony rejestracji

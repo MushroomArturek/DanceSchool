@@ -18,16 +18,14 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
     def post(self, request, *args, **kwargs):
-        # Uzyskujemy token
         response = super().post(request, *args, **kwargs)
-
-        # Pobieramy użytkownika na podstawie adresu email
         email = request.data.get("email")
         user = CustomUser.objects.filter(email=email).first()
 
         if user:
-            # Dodajemy dane użytkownika do odpowiedzi
+            # Changed to match frontend expectations
             user_data = {
+                "email": user.email,  # Add email
                 "firstName": user.first_name,
                 "lastName": user.last_name,
                 "role": user.role,

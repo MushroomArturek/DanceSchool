@@ -56,25 +56,35 @@ class Student(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
+from django.db import models
+
+
 class Class(models.Model):
     name = models.CharField(max_length=200)
     style = models.CharField(max_length=100, help_text="Styl tańca (np. Salsa, Waltz)")
     max_participants = models.PositiveIntegerField(help_text="Maksymalna liczba uczestników")
     instructor = models.ForeignKey(
-        'Instructor',  # Zakładamy, że model Instructor jest w tej samej aplikacji
+        'Instructor',
         on_delete=models.CASCADE,
         related_name='classes',
         help_text="Wybierz instruktora spośród istniejących"
     )
-    start_time = models.DateTimeField(help_text="Data i czas rozpoczęcia zajęć")
-    end_time = models.DateTimeField(help_text="Data i czas zakończenia zajęć")
+    start_time = models.DateTimeField(help_text="Data i czas rozpoczęcia zajęć", null=True, blank=True)
+    end_time = models.DateTimeField(help_text="Data i czas zakończenia zajęć", null=True, blank=True)
+    days_of_week = models.CharField(
+        max_length=20,
+        help_text="Dni tygodnia dla zajęć cyklicznych (np. MO,WE,FR)",
+        null=True,
+        blank=True
+    )
+    is_recurring = models.BooleanField(default=False, help_text="Czy zajęcia są cykliczne")
     room = models.CharField(max_length=50, help_text="Sala zajęciowa", blank=True, null=True)
 
     def __str__(self):
         return f"{self.name} ({self.style})"
 
     def available_slots(self):
-        booked_count = self.bookings.filter(status="confirmed").count()  # Liczba potwierdzonych rezerwacji
+        booked_count = self.bookings.filter(status="confirmed").count()
         return self.max_participants - booked_count
 
 class Instructor(models.Model):

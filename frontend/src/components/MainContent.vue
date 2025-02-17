@@ -2,7 +2,7 @@
   <div class="dashboard-app">
     <div class="dashboard-toolbar">
       <div v-if="authState.isLoggedIn" class="user-info">
-        Zalogowano jako: {{ authState.firstName }} {{ authState.lastName }}
+        Zalogowano jako: {{ authState.email }}
       </div>
       <div v-else class="user-info">
         Niezalogowany

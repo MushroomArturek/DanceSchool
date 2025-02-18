@@ -25,47 +25,38 @@ export default {
     const events = ref([]);
 
     const fetchClasses = async () => {
-      try {
-        const token = localStorage.getItem("access");
-        if (!token) {
-          throw new Error("No access token found");
-        }
+  try {
+    const response = await axios.get("http://localhost:8000/api/classes/");
 
-        const response = await axios.get("http://localhost:8000/api/classes/", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    // Map classes to calendar events
+    events.value = response.data.map((item) => {
+      const baseEvent = {
+        id: item.id,
+        title: `${item.name} (${item.style})`,
+        description: `Prowadzący: ${item.instructor}, Sala: ${item.room}`,
+      };
 
-        // Mapowanie zajęć do struktury wydarzeń dla kalendarza
-        events.value = response.data.map((item) => {
-          const baseEvent = {
-            id: item.id,
-            title: `${item.name} (${item.style})`,
-            description: `Prowadzący: ${item.instructor}, Sala: ${item.room}`,
-          };
-
-          if (item.is_recurring) {
-            return {
-              ...baseEvent,
-              start: item.start_time, // Używamy start_time zamiast start_hour
-              end: item.end_time, // Używamy end_time zamiast end_hour
-              rrule: `FREQ=WEEKLY;BYDAY=${item.days_of_week}`,
-            };
-          } else {
-            return {
-              ...baseEvent,
-              start: item.start_time,
-              end: item.end_time,
-            };
-          }
-        });
-
-        console.log("Mapped events:", events.value); // Debugging
-      } catch (error) {
-        console.error("Błąd podczas pobierania zajęć:", error);
+      if (item.is_recurring) {
+        return {
+          ...baseEvent,
+          start: item.start_time,
+          end: item.end_time,
+          rrule: `FREQ=WEEKLY;BYDAY=${item.days_of_week}`,
+        };
+      } else {
+        return {
+          ...baseEvent,
+          start: item.start_time,
+          end: item.end_time,
+        };
       }
-    };
+    });
+
+    console.log("Mapped events:", events.value);
+  } catch (error) {
+    console.error("Błąd podczas pobierania zajęć:", error);
+  }
+};
 
     const initializeCalendar = () => {
       calendar.value = createCalendar({

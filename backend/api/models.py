@@ -72,7 +72,7 @@ class Class(models.Model):
     start_time = models.DateTimeField(help_text="Data i czas rozpoczęcia zajęć", null=True, blank=True)
     end_time = models.DateTimeField(help_text="Data i czas zakończenia zajęć", null=True, blank=True)
     days_of_week = models.CharField(
-        max_length=20,
+        max_length=100,  # Zwiększamy długość
         help_text="Dni tygodnia dla zajęć cyklicznych (np. MO,WE,FR)",
         null=True,
         blank=True
@@ -85,7 +85,7 @@ class Class(models.Model):
 
     def available_slots(self):
         booked_count = self.bookings.filter(status="confirmed").count()
-        return self.max_participants - booked_count
+        return max(0, self.max_participants - booked_count)
 
 class Instructor(models.Model):
     first_name = models.CharField(max_length=50, help_text="Imię instruktora")

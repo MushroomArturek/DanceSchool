@@ -183,10 +183,10 @@ class InstructorDeleteView(generics.DestroyAPIView):
 class ClassListView(generics.ListAPIView):
     model = Class
     serializer_class = ClassDetailSerializer
+    permission_classes = []  # Allow unauthenticated access
 
     def get_queryset(self):
         queryset = Class.objects.all()
-        # Dodaj opcjonalne filtrowanie np. po stylu zajęć
         style = self.request.query_params.get("style", None)
         if style:
             queryset = queryset.filter(style__icontains=style)
@@ -231,36 +231,43 @@ class ClassDeleteView(generics.DestroyAPIView):
 
 class BookingListView(generics.ListAPIView):
     """
-    GET: Zwraca listę rezerwacji dla zalogowanego użytkownika.
+    GET: Returns list of bookings for logged in user.
     """
     model = Booking
     serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Filtruje rezerwacje dla aktualnie zalogowanego użytkownika.
+        Filter bookings for currently logged in user's student profile
         """
-        return Booking.objects.filter(student=self.request.user)
+        try:
+            student = Student.objects.get(user=self.request.user)
+            return Booking.objects.filter(student=student)
+        except Student.DoesNotExist:
+            return Booking.objects.none()
 
 class BookingCreateView(generics.CreateAPIView):
     """
-    POST: Tworzenie nowej rezerwacji dla użytkownika.
+    POST: Create new booking for user.
     """
     model = Booking
     serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        """
-        Sprawdź dostępność miejsc przed stworzeniem rezerwacji.
-        """
-        class_instance = serializer.validated_data["class_model"]
+        try:
+            student = Student.objects.get(user=self.request.user)
+            class_instance = serializer.validated_data["class_model"]
 
-        # Sprawdzenie, czy są dostępne miejsca
-        if class_instance.bookings.filter(status="confirmed").count() >= class_instance.max_participants:
-            raise serializers.ValidationError("Brak wolnych miejsc na te zajęcia.")
+            # Check if spots available
+            if class_instance.bookings.filter(status="confirmed").count() >= class_instance.max_participants:
+                raise serializers.ValidationError("No spots available for this class.")
 
-        # Przypisz aktualnego użytkownika do rezerwacji
-        serializer.save(student=self.request.user)
+            # Create booking
+            serializer.save(student=student)
+        except Student.DoesNotExist:
+            raise serializers.ValidationError("Student profile not found.")
 
 class BookingDetailView(generics.RetrieveAPIView):
     """
@@ -281,16 +288,15 @@ class BookingDeleteView(generics.DestroyAPIView):
     """
     model = Booking
     serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        """
-        Pozwala użytkownikowi anulować wyłącznie jego własne rezerwacje.
-        """
-        return Booking.objects.filter(student=self.request.user)
+        try:
+            student = Student.objects.get(user=self.request.user)
+            return Booking.objects.filter(student=student)
+        except Student.DoesNotExist:
+            return Booking.objects.none()
 
     def perform_destroy(self, instance):
-        """
-        Zamiast fizycznego usunięcia, zmień status rezerwacji na 'cancelled'.
-        """
         instance.status = "cancelled"
         instance.save()

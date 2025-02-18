@@ -13,16 +13,25 @@
       <router-link to="/schedule" class="dashboard-nav-item">
         <i class="fa-solid fa-calendar-days"></i> Harmonogram zajęć
       </router-link>
-      <div class="dashboard-nav-dropdown">
-        <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle">
-          <i class="fas fa-users"></i> Users
-        </a>
-        <div class="dashboard-nav-dropdown-menu">
-          <a href="#" class="dashboard-nav-dropdown-item">All Users</a>
-          <a href="#" class="dashboard-nav-dropdown-item">Subscribed</a>
-          <a href="#" class="dashboard-nav-dropdown-item">Banned</a>
-        </div>
-      </div>
+      <router-link
+          v-if="authState.isLoggedIn && authState.role === 'student'"
+          to="/reservations"
+          class="dashboard-nav-item">
+        <i class="fas fa-bookmark"></i> Rezerwacje
+      </router-link>
+      <router-link to="/pricing" class="dashboard-nav-item">
+        <i class="fas fa-tags"></i> Cennik
+      </router-link>
+      <!--      <div class="dashboard-nav-dropdown">-->
+      <!--        <a href="#!" class="dashboard-nav-item dashboard-nav-dropdown-toggle">-->
+      <!--          <i class="fas fa-users"></i> Users-->
+      <!--        </a>-->
+      <!--        <div class="dashboard-nav-dropdown-menu">-->
+      <!--          <a href="#" class="dashboard-nav-dropdown-item">All Users</a>-->
+      <!--          <a href="#" class="dashboard-nav-dropdown-item">Subscribed</a>-->
+      <!--          <a href="#" class="dashboard-nav-dropdown-item">Banned</a>-->
+      <!--        </div>-->
+      <!--      </div>-->
       <router-link v-if="authState.isLoggedIn" to="/profile" class="dashboard-nav-item">
         <i class="fas fa-cogs"></i> Ustawienia konta
       </router-link>
@@ -40,8 +49,8 @@
 </template>
 
 <script>
-import { authState, updateAuthState } from "../state/authState";
-import { logout } from "../api/auth.js";
+import {authState, updateAuthState} from "../state/authState";
+import {logout} from "../api/auth.js";
 
 export default {
   setup() {
@@ -84,7 +93,6 @@ export default {
   color: #fff;
   text-decoration: none;
 }
-
 
 
 .brand-logo {

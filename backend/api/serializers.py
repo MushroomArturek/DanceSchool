@@ -46,6 +46,8 @@ class RegisterUserSerializer(serializers.ModelSerializer):
             date_of_birth=date_of_birth
         )
         return user
+
+
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
@@ -76,6 +78,7 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class StudentCreateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
@@ -90,6 +93,7 @@ class StudentCreateSerializer(serializers.ModelSerializer):
             "email",
             "phone_number",
         ]
+
 
 class ClassCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -111,13 +115,25 @@ class ClassCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Dla zajęć cyklicznych wymagane jest pole days_of_week")
         return data
 
+
 class ClassDetailSerializer(serializers.ModelSerializer):
     start_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     end_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
 
+    instructor = serializers.SerializerMethodField()
+    available_slots = serializers.SerializerMethodField()
+
     class Meta:
         model = Class
         fields = "__all__"
+
+    def get_instructor(self, obj):
+        return f"{obj.instructor.first_name} {obj.instructor.last_name}"
+
+    def get_available_slots(self, obj):
+        booked_count = obj.bookings.filter(status="confirmed").count()
+        return obj.max_participants - booked_count
+
 
 class ClassUpdateSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=False)
@@ -136,7 +152,6 @@ class ClassUpdateSerializer(serializers.ModelSerializer):
             "end_time",
             "room",
         ]
-
 
 
 class InstructorCreateSerializer(serializers.ModelSerializer):
@@ -158,18 +173,17 @@ class InstructorSerializer(serializers.ModelSerializer):
         model = Instructor
         fields = '__all__'
 
+
 class BookingSerializer(serializers.ModelSerializer):
+    class_details = ClassDetailSerializer(source='class_model', read_only=True)
+
     class Meta:
         model = Booking
-        fields = ['id', 'student', 'class_model', 'booking_date', 'status']
-        read_only_fields = ['student', 'booking_date', 'status']
+        fields = ['id', 'student', 'class_model', 'class_details', 'booking_date', 'status']
+        read_only_fields = ['student', 'booking_date']
 
     def validate(self, data):
-        """
-        Sprawdź, czy na te zajęcia są dostępne miejsca.
-        """
         class_instance = data['class_model']
         if class_instance.bookings.filter(status="confirmed").count() >= class_instance.max_participants:
-            raise serializers.ValidationError("Brak wolnych miejsc na te zajęcia.")
+            raise serializers.ValidationError("No spots available for this class.")
         return data
-

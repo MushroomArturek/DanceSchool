@@ -32,11 +32,13 @@ export default {
 <style scoped>
 /* Styles for the main content (dashboard-app) */
 .dashboard-app {
-  margin-left: 238px; /* Przesunięcie na prawo o szerokość sidebar */
+  margin-left: 280px; /* Dopasowanie do nowej szerokości menu */
   display: flex;
   flex-direction: column;
   flex-grow: 2;
-  position: relative; /* Układ względem sidebar */
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden; /* Zapobiegamy poziomemu scrollowaniu */
 }
 
 .dashboard-toolbar {
@@ -48,7 +50,7 @@ export default {
   position: fixed;
   top: 0;
   right: 0;
-  left: 238px; /* Uwzględnienie sidebar w górnym pasku */
+  left: 280px; /* Dopasowanie do nowej szerokości menu */
   z-index: 1000;
 }
 
@@ -59,8 +61,10 @@ export default {
 }
 
 .dashboard-content {
-  margin-top: 84px; /* Dolna krawędź toolbar */
+  margin-top: 84px;
   padding: 25px;
   flex-grow: 2;
+  position: relative;
+  z-index: 900;
 }
 </style>

@@ -53,10 +53,23 @@ const routes = [
         name: 'AdminClasses',
         component: () => import('../components/admin/AdminClasses.vue'),
         meta: {requiresAuth: true, requiresAdmin: true}
-    },{
+    },
+    {
         path: '/admin/students',
         name: 'AdminStudents',
         component: () => import('../components/admin/AdminStudents.vue'),
+        meta: {requiresAuth: true, requiresAdmin: true}
+    },
+    {
+        path: '/admin/reports/attendance',
+        name: 'AttendanceReport',
+        component: () => import('../components/admin/reports/AttendanceReport.vue'),
+        meta: {requiresAuth: true, requiresAdmin: true}
+    },
+    {
+        path: '/admin/reports/analytics',
+        name: 'ClassAnalytics',
+        component: () => import('../components/admin/reports/ClassAnalytics.vue'),
         meta: {requiresAuth: true, requiresAdmin: true}
     },
 

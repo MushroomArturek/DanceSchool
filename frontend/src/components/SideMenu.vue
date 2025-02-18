@@ -140,22 +140,26 @@ export default {
 <style scoped>
 /* Styles for the sidebar (dashboard-nav) */
 .dashboard-nav {
-  min-width: 238px;
-  height: 100vh; /* Rozciągnięcie na całą wysokość okna przeglądarki */
+  min-width: 280px; /* Zwiększamy minimalną szerokość */
+  width: 280px; /* Stała szerokość */
+  height: 100vh;
   position: fixed;
   left: 0;
-  top: 0; /* Zaczyna się od samej góry */
+  top: 0;
   bottom: 0;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden; /* Zapobiegamy poziomemu scrollowaniu */
   background-color: #443ea2;
+  z-index: 1100; /* Wyższy z-index niż reszta elementów */
 }
 
 .dashboard-nav header {
   min-height: 84px;
+  width: 100%; /* Pełna szerokość */
   padding: 8px 27px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Wyrównanie do lewej */
 }
 
 .dashboard-nav a {
@@ -165,12 +169,15 @@ export default {
 
 
 .brand-logo {
+  width: 100%;
   font-family: "Nunito", sans-serif;
   font-weight: bold;
   font-size: 20px;
   display: flex;
   align-items: center;
+  gap: 15px; /* Dodajemy stały odstęp między ikoną a tekstem */
   color: #fff;
+  padding: 0 27px; /* Zamieniamy padding-right na padding po obu stronach */
 }
 
 .brand-logo i {
@@ -189,20 +196,20 @@ export default {
 
 .dashboard-nav-item {
   min-height: 56px;
-  padding: 15px 20px; /* Większe paddingi dla większych kafelków */
+  padding: 15px 27px; /* Ujednolicamy padding */
   display: flex;
   align-items: center;
-  transition: ease-out 0.5s;
-  font-size: 20px; /* Zwiększenie rozmiaru czcionki */
+  gap: 15px; /* Stały odstęp między ikoną a tekstem */
+  font-size: 20px;
   color: #fff;
   text-decoration: none;
-  transition: background 0.3s, color 0.3s; /* Łagodny efekt hover */
+  transition: background 0.3s, color 0.3s;
 }
 
 .dashboard-nav-item i {
-  width: 36px;
-  font-size: 28px; /* Większa ikona */
-  margin-right: 30px; /* Większy odstęp między ikoną a tekstem */
+  width: 24px; /* Stała szerokość dla ikon */
+  font-size: 24px;
+  text-align: center; /* Centrujemy ikony w ich kontenerze */
 }
 
 .dashboard-nav-item:hover {
@@ -230,11 +237,11 @@ export default {
 
 .dashboard-nav-dropdown-item {
   min-height: 40px;
-  padding: 10px 20px;
+  padding: 10px 27px 10px 66px; /* 66px = 27px (podstawowy padding) + 24px (szerokość ikony) + 15px (gap) */
   display: flex;
-  margin-right: 30px; /* Add consistent spacing for dropdown items */
-  transition: ease-out 0.5s;
-  font-size: 18px; /* Podmenu może być trochę mniejsze */
+  align-items: center;
+  gap: 15px;
+  font-size: 18px;
   color: #fff;
   text-decoration: none;
   transition: background 0.3s, color 0.3s;
@@ -258,12 +265,12 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-right: 15px;
+  width: 100%;
 }
 
 .dropdown-arrow {
+  margin-left: auto; /* Przesuwa strzałkę na prawo */
   font-size: 0.8em;
-  transition: transform 0.3s;
 }
 
 .dashboard-nav-dropdown.show .dropdown-arrow {

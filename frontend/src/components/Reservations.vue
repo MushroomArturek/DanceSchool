@@ -213,6 +213,38 @@ export default {
 </script>
 
 <style scoped>
+
+<style scoped>
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+  background-color: #4CAF50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 .reservations-container {
   padding: 2rem;
   max-width: 1200px;
@@ -316,6 +348,7 @@ export default {
     cursor: not-allowed;
   }
 }
+
 
 .cancel-btn {
   background: #dc3545;

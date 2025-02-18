@@ -6,6 +6,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Student, Instructor, Class, Booking, CustomUser
+from .permissions import IsAdmin
 from .serializers import StudentSerializer, StudentUpdateSerializer, StudentCreateSerializer, InstructorSerializer, \
     InstructorCreateSerializer, InstructorUpdateSerializer, ClassDetailSerializer, ClassCreateSerializer, \
     ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer
@@ -139,6 +140,7 @@ class StudentProfileUpdateView(generics.UpdateAPIView):
 class InstructorListView(generics.ListAPIView):
     queryset = Instructor.objects.all()
     serializer_class = InstructorSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]  # Add permissions
 
 
 class InstructorDetailView(generics.RetrieveAPIView):

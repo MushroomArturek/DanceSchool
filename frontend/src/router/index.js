@@ -41,7 +41,25 @@ const routes = [
         name: "Reservations",
         component: Reservations,
         meta: {requiresAuth: true}
-    }
+    },
+    {
+        path: '/admin/instructors',
+        name: 'AdminInstructors',
+        component: () => import('../components/admin/AdminInstructors.vue'),
+        meta: {requiresAuth: true, requiresAdmin: true}
+    },
+    {
+        path: '/admin/classes',
+        name: 'AdminClasses',
+        component: () => import('../components/admin/AdminClasses.vue'),
+        meta: {requiresAuth: true, requiresAdmin: true}
+    },{
+        path: '/admin/students',
+        name: 'AdminStudents',
+        component: () => import('../components/admin/AdminStudents.vue'),
+        meta: {requiresAuth: true, requiresAdmin: true}
+    },
+
 
 ];
 

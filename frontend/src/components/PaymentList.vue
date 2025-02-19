@@ -7,7 +7,8 @@
     <div class="pricing-grid">
       <div v-for="plan in subscriptionPlans"
            :key="plan.type"
-           class="pricing-card">
+           :class="['pricing-card', { 'selected': selectedPlan?.type === plan.type }]"
+      >
         <div class="pricing-card-header">
           <h2>{{ plan.name }}</h2>
           <div class="price">{{ plan.price }} zł</div>
@@ -28,6 +29,54 @@
       </div>
     </div>
 
+    <!--    <div v-if="showPaymentMethodModal" class="payment-modal">-->
+    <!--    <div class="modal-content">-->
+    <!--      <h3>Wybierz metodę płatności</h3>-->
+    <!--      <div class="payment-methods">-->
+    <!--        <button-->
+    <!--          v-for="method in paymentMethods"-->
+    <!--          :key="method.value"-->
+    <!--          @click="selectPaymentMethod(method.value)"-->
+    <!--          class="payment-method-button"-->
+    <!--        >-->
+    <!--          <i :class="getPaymentIcon(method.value)"></i>-->
+    <!--          {{ method.label }}-->
+    <!--        </button>-->
+    <!--      </div>-->
+    <!--      <div class="modal-footer">-->
+    <!--        <button @click="showPaymentMethodModal = false" class="cancel-button">Anuluj</button>-->
+    <!--      </div>-->
+    <!--    </div>-->
+    <!--  </div>-->
+    <Transition name="fade">
+      <div v-if="showPaymentMethodModal" class="payment-modal">
+        <div class="modal-content">
+          <h3>Wybierz metodę płatności</h3>
+          <div class="payment-methods">
+            <button
+                v-for="method in paymentMethods"
+                :key="method.value"
+                @click="selectPaymentMethod(method.value)"
+                :class="['payment-method-button', { 'selected': selectedMethod === method.value }]"
+            >
+              <i :class="getPaymentIcon(method.value)"></i>
+              {{ method.label }}
+            </button>
+          </div>
+          <div class="modal-footer">
+            <button @click="closePaymentModal" class="cancel-button">Anuluj</button>
+            <button
+                @click="createNewPayment"
+                class="purchase-button"
+                :disabled="!selectedMethod"
+            >
+              Zakup plan
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <div class="payment-history">
       <h3>Historia płatności</h3>
       <table class="payment-table">
@@ -37,6 +86,7 @@
           <th>Typ</th>
           <th>Kwota</th>
           <th>Status</th>
+          <th>Metoda płatności</th>
           <th>Akcje</th>
         </tr>
         </thead>
@@ -46,19 +96,13 @@
           <td>{{ payment.payment_type ? translatePaymentType(payment.payment_type) : '-' }}</td>
           <td>{{ payment.amount ? `${payment.amount} zł` : '-' }}</td>
           <td>
-    <span v-if="payment.status" :class="['status', payment.status]">
-      {{ translateStatus(payment.status) }}
-    </span>
-            <span v-else>-</span>
+        <span :class="['status', payment.status]">
+          {{ translateStatus(payment.status) }}
+        </span>
           </td>
+          <td>{{ payment.payment_method ? translatePaymentMethod(payment.payment_method) : '-' }}</td>
           <td class="actions">
-            <button v-if="payment.status === 'pending'" @click="updatePayment(payment.id, 'completed')"
-                    class="btn-action">
-              <i class="fas fa-check"></i>
-            </button>
-            <button v-if="payment.status === 'pending'" @click="deletePayment(payment.id)" class="btn-action delete">
-              <i class="fas fa-times"></i>
-            </button>
+            <!-- ... existing action buttons ... -->
           </td>
         </tr>
         </tbody>
@@ -74,6 +118,9 @@ import axios from 'axios';
 const payments = ref([]);
 const studentId = ref(null);
 const statusFilter = ref('');
+const showPaymentMethodModal = ref(false);
+const selectedMethod = ref(null);
+const selectedPlan = ref(null);
 const API_URL = 'http://localhost:8000';
 axios.defaults.baseURL = API_URL;
 
@@ -129,6 +176,13 @@ const subscriptionPlans = [
   }
 ];
 
+const paymentMethods = [
+  {value: 'cash', label: 'Gotówka'},
+  {value: 'transfer', label: 'Przelew bankowy'},
+  {value: 'blik', label: 'BLIK'},
+  {value: 'card', label: 'Karta płatnicza w studio'}
+];
+
 const filteredPayments = computed(() => {
   if (!statusFilter.value) return payments.value;
   return payments.value.filter(payment => payment.status === statusFilter.value);
@@ -161,27 +215,9 @@ const fetchPayments = async () => {
 };
 
 
-const createPayment = async (plan) => {
-  if (!studentId.value) {
-    console.error('Student ID not found');
-    return;
-  }
-
-  try {
-    await axios.post('/api/payments/create/', {
-      payment_type: plan.type,
-      amount: plan.price,
-      student: studentId.value
-    }, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('access')}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    await fetchPayments();
-  } catch (error) {
-    console.error('Error creating payment:', error);
-  }
+const createPayment = (plan) => {
+  selectedPlan.value = plan;
+  showPaymentMethodModal.value = true;
 };
 
 const updatePayment = async (id, status) => {
@@ -195,6 +231,61 @@ const updatePayment = async (id, status) => {
   } catch (error) {
     console.error('Error updating payment:', error);
   }
+};
+
+const selectPaymentMethod = (method) => {
+  selectedMethod.value = method;
+};
+
+const createNewPayment = async () => {
+  if (!studentId.value || !selectedPlan.value || !selectedMethod.value) return;
+
+  try {
+    await axios.post('/api/payments/create/', {
+      payment_type: selectedPlan.value.type,
+      amount: selectedPlan.value.price,
+      student: studentId.value,
+      payment_method: selectedMethod.value
+    }, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    await fetchPayments();
+    showPaymentMethodModal.value = false;
+    selectedMethod.value = null;
+  } catch (error) {
+    console.error('Error creating payment:', error);
+  }
+};
+
+const closePaymentModal = () => {
+  showPaymentMethodModal.value = false;
+  selectedMethod.value = null;
+  setTimeout(() => {
+    selectedPlan.value = null;
+  }, 300);
+};
+
+const translatePaymentMethod = (method) => {
+  const methods = {
+    'cash': 'Gotówka',
+    'transfer': 'Przelew bankowy',
+    'blik': 'BLIK',
+    'card': 'Karta płatnicza w studio'
+  };
+  return methods[method] || method;
+};
+
+const getPaymentIcon = (method) => {
+  const icons = {
+    'cash': 'fas fa-money-bill-wave',
+    'transfer': 'fas fa-university',
+    'blik': 'fas fa-mobile-alt',
+    'card': 'fas fa-credit-card'
+  };
+  return icons[method] || 'fas fa-money-bill';
 };
 
 const deletePayment = async (id) => {
@@ -280,7 +371,8 @@ onMounted(async () => {
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease;
+  border: 2px solid transparent;
+  transition: transform 0.3s ease, border-color 0.3s ease;
   position: relative;
   display: flex; /* Add flex display */
   flex-direction: column; /* Stack children vertically */
@@ -291,6 +383,10 @@ onMounted(async () => {
   transform: translateY(-5px);
 }
 
+.pricing-card.selected {
+  border-color: #443ea2;
+  box-shadow: 0 0 15px rgba(68, 62, 162, 0.3);
+}
 
 .pricing-card-header {
   background: #f8f9fa;
@@ -356,7 +452,6 @@ onMounted(async () => {
   background: #372f8b;
 }
 
-/* Keep existing payment history styles */
 .payment-history {
   margin-top: 4rem;
 }
@@ -379,9 +474,117 @@ onMounted(async () => {
   .pricing-grid {
     grid-template-columns: 1fr;
   }
+}
 
-  .pricing-card.featured {
-    transform: none;
-  }
+.payment-modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  margin: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Fade animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Payment methods grid */
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.payment-method-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+}
+
+.payment-method-button:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.payment-method-button i {
+  font-size: 1.5rem;
+  color: #443ea2;
+}
+
+.payment-method-button.selected {
+  border: 2px solid #443ea2;
+  box-shadow: 0 0 10px rgba(68, 62, 162, 0.2);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.purchase-button {
+  padding: 0.8rem 2rem;
+  background: #443ea2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.purchase-button:hover:not(:disabled) {
+  background: #372f8b;
+}
+
+.purchase-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  padding: 0.8rem 2rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-size: 1rem;
+}
+
+.cancel-button:hover {
+  background: #5a6268;
 }
 </style>

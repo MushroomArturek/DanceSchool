@@ -135,10 +135,20 @@ class Payment(models.Model):
         ('yearly', 'Karnet roczny')
     ]
 
+    PAYMENT_METHOD = [
+        ('cash', 'Gotówka'),
+        ('transfer', 'Przelew bankowy'),
+        ('blik', 'BLIK'),
+        ('card', 'Karta płatnicza w studio')
+    ]
+
     student = models.ForeignKey('Student', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD)
     status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)
     valid_until = models.DateField(null=True, blank=True)
+
+

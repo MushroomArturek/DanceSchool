@@ -206,6 +206,6 @@ class ClassAnalyticsSerializer(serializers.Serializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['id', 'student', 'amount', 'payment_type', 'status',
-                 'created_at', 'paid_at', 'valid_until']
+        fields = ['id', 'student', 'amount', 'payment_type', 'payment_method',
+                 'status', 'created_at', 'paid_at', 'valid_until']
         read_only_fields = ['status', 'paid_at', 'valid_until']

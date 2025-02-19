@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Class, Instructor, Booking, CustomUser
+from .models import Student, Class, Instructor, Booking, CustomUser, Payment
 
 
 # Auth
@@ -187,3 +187,25 @@ class BookingSerializer(serializers.ModelSerializer):
         if class_instance.bookings.filter(status="confirmed").count() >= class_instance.max_participants:
             raise serializers.ValidationError("No spots available for this class.")
         return data
+
+# Reports
+
+class AttendanceReportSerializer(serializers.Serializer):
+    class_name = serializers.CharField()
+    instructor_name = serializers.CharField()
+    date = serializers.DateTimeField()
+    attendance_rate = serializers.FloatField()
+    booked_slots = serializers.IntegerField()
+    max_slots = serializers.IntegerField()
+
+class ClassAnalyticsSerializer(serializers.Serializer):
+    popular_classes = serializers.ListField(child=serializers.DictField())
+    peak_hours = serializers.ListField(child=serializers.DictField())
+    style_distribution = serializers.ListField(child=serializers.DictField())
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'student', 'amount', 'payment_type', 'status',
+                 'created_at', 'paid_at', 'valid_until']
+        read_only_fields = ['status', 'paid_at', 'valid_until']

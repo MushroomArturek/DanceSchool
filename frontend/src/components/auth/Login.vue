@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import {login} from "../api/auth.js"; // Import funkcji do logowania z API
-import {updateAuthState} from "../state/authState"; // Import funkcji stanu globalnego
+import {login} from "../../api/auth.js"; // Import funkcji do logowania z API
+import {updateAuthState} from "../../state/authState.js"; // Import funkcji stanu globalnego
 
 export default {
   data() {

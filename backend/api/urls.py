@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import CustomTokenObtainPairView, RegisterUserView, StudentProfileView, StudentProfileUpdateView
+from .views import CustomTokenObtainPairView, RegisterUserView, StudentProfileView, StudentProfileUpdateView, \
+    AttendanceReportView, ClassAnalyticsView, PaymentListView, PaymentDetailView, PaymentCreateView, PaymentUpdateView, \
+    PaymentDeleteView
 from .views import (
     StudentListView,
     StudentDetailView,
@@ -23,7 +25,6 @@ from .views import (
     BookingDeleteView,
 )
 
-
 urlpatterns = [
     # Endpoints dla Students
     path("students/", StudentListView.as_view(), name="student-list"),
@@ -44,9 +45,9 @@ urlpatterns = [
     path("instructors/<int:id>/", InstructorDetailView.as_view(), name="instructor-detail"),  # /api/instructors/<id>/
     path("instructors/create/", InstructorCreateView.as_view(), name="instructor-create"),  # /api/instructors/create/
     path("instructors/<int:id>/update/", InstructorUpdateView.as_view(), name="instructor-update"),
-    # /api/instructors/<id>/update/
     path("instructors/<int:id>/delete/", InstructorDeleteView.as_view(), name="instructor-delete"),
-    # /api/instructors/<id>/delete/
+
+    # Endpoints dla Bookings
     path("bookings/", BookingListView.as_view(), name="booking-list"),
     path("bookings/create/", BookingCreateView.as_view(), name="booking-create"),
     path("bookings/<int:pk>/", BookingDetailView.as_view(), name="booking-detail"),
@@ -57,10 +58,19 @@ urlpatterns = [
     path('auth/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/register/', RegisterUserView.as_view(), name='register'),
 
+    # Student profile endpoints
     path("student/profile/", StudentProfileView.as_view(), name="student-profile"),
     path("student/profile/update/", StudentProfileUpdateView.as_view(), name="student-profile-update"),
 
+    # Report endpoints
+    path('reports/attendance/<str:period>/', AttendanceReportView.as_view(), name='attendance-report'),
+    path('reports/analytics/<str:period>/', ClassAnalyticsView.as_view(), name='class-analytics'),
 
-
+    ## Payments endpoints
+    path('payments/', PaymentListView.as_view(), name='payment-list'),
+    path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
+    path('payments/create/', PaymentCreateView.as_view(), name='payment-create'),
+    path('payments/<int:pk>/update/', PaymentUpdateView.as_view(), name='payment-update'),
+    path('payments/<int:pk>/delete/', PaymentDeleteView.as_view(), name='payment-delete'),
 ]
 

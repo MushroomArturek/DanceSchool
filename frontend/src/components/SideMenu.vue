@@ -19,6 +19,12 @@
           class="dashboard-nav-item">
         <i class="fas fa-bookmark"></i> Rezerwacje
       </router-link>
+      <router-link
+          v-if="authState.isLoggedIn && authState.role === 'student'"
+          to="/payments"
+          class="dashboard-nav-item">
+        <i class="fas fa-credit-card"></i> Płatności
+      </router-link>
       <router-link to="/pricing" class="dashboard-nav-item">
         <i class="fas fa-tags"></i> Cennik
       </router-link>
@@ -96,9 +102,9 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { authState, updateAuthState } from "../state/authState";
-import { logout } from "../api/auth.js";
+import {ref} from 'vue';
+import {authState, updateAuthState} from "../state/authState";
+import {logout} from "../api/auth.js";
 
 export default {
   name: 'SideMenu',

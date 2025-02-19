@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { register } from "../api/auth.js"; // Import funkcji rejestracji z API
+import { register } from "../../api/auth.js"; // Import funkcji rejestracji z API
 
 export default {
   data() {

@@ -11,6 +11,7 @@ class Role(models.TextChoices):
     INSTRUCTOR = "instructor", "Instruktor"
     ADMIN = "admin", "Administrator"
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -24,11 +25,14 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
         return self.create_user(email, password, **extra_fields)
 
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    role = models.CharField(max_length=20, choices=[('student', 'Student'), ('instructor', 'Instructor'), ('admin', 'Administrator')], default='student')
+    role = models.CharField(max_length=20,
+                            choices=[('student', 'Student'), ('instructor', 'Instructor'), ('admin', 'Administrator')],
+                            default='student')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
@@ -87,6 +91,7 @@ class Class(models.Model):
         booked_count = self.bookings.filter(status="confirmed").count()
         return max(0, self.max_participants - booked_count)
 
+
 class Instructor(models.Model):
     first_name = models.CharField(max_length=50, help_text="Imię instruktora")
     last_name = models.CharField(max_length=50, help_text="Nazwisko instruktora")
@@ -95,6 +100,7 @@ class Instructor(models.Model):
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} - {self.specialization}"
+
 
 class Booking(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE,
@@ -114,3 +120,25 @@ class Booking(models.Model):
         return f"{self.student} - {self.class_model} ({self.status})"
 
 
+class Payment(models.Model):
+    PAYMENT_STATUS = [
+        ('pending', 'Oczekująca'),
+        ('completed', 'Zrealizowana'),
+        ('failed', 'Nieudana'),
+        ('refunded', 'Zwrócona')
+    ]
+
+    PAYMENT_TYPE = [
+        ('single', 'Pojedyncze zajęcia'),
+        ('monthly', 'Karnet miesięczny'),
+        ('quarterly', 'Karnet kwartalny'),
+        ('yearly', 'Karnet roczny')
+    ]
+
+    student = models.ForeignKey('Student', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE)
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    paid_at = models.DateTimeField(null=True, blank=True)
+    valid_until = models.DateField(null=True, blank=True)

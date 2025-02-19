@@ -1,11 +1,12 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HomePage from "../pages/HomePage.vue";
 import ClassSchedule from "../components/ClassSchedule.vue";
-import Login from "../components/Login.vue";
-import Register from "../components/Register.vue";
+import Login from "../components/auth/Login.vue";
+import Register from "../components/auth/Register.vue";
 import UserSettings from "../components/UserSettings.vue";
 import PricingPage from "../pages/PricingPage.vue";
 import Reservations from "../components/Reservations.vue";
+import PaymentList from "../components/PaymentList.vue";
 
 // Definiowanie tras
 const routes = [
@@ -71,6 +72,12 @@ const routes = [
         name: 'ClassAnalytics',
         component: () => import('../components/admin/reports/ClassAnalytics.vue'),
         meta: {requiresAuth: true, requiresAdmin: true}
+    },
+    {
+        path: "/payments",
+        name: "Payments",
+        component: PaymentList,
+        meta: {requiresAuth: true}
     },
 
 

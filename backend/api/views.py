@@ -1,3 +1,8 @@
+from datetime import timedelta
+
+from django.db.models import Count, FloatField, F
+from django.db.models.functions import Cast, ExtractHour
+from django.utils import timezone
 from rest_framework.exceptions import NotFound
 from rest_framework import generics, status, serializers, permissions
 from rest_framework.permissions import IsAuthenticated
@@ -5,11 +10,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Instructor, Class, Booking, CustomUser
+from .models import Student, Instructor, Class, Booking, CustomUser, Payment
 from .permissions import IsAdmin
 from .serializers import StudentSerializer, StudentUpdateSerializer, StudentCreateSerializer, InstructorSerializer, \
     InstructorCreateSerializer, InstructorUpdateSerializer, ClassDetailSerializer, ClassCreateSerializer, \
-    ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer
+    ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer, \
+    AttendanceReportSerializer, ClassAnalyticsSerializer, PaymentSerializer
 
 
 # Auth (Pierwsza klasa do serializers?????)
@@ -35,6 +41,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
         return response
 
+
 class RegisterUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegisterUserSerializer
@@ -58,8 +65,6 @@ class RegisterUserView(generics.CreateAPIView):
         }, status=status.HTTP_201_CREATED)
 
 
-
-
 class StudentDeleteView(generics.DestroyAPIView):
     model = Student
 
@@ -68,6 +73,7 @@ class StudentDeleteView(generics.DestroyAPIView):
             return Student.objects.get(pk=self.kwargs["id"])
         except Student.DoesNotExist:
             raise NotFound(detail="Student not found.")
+
 
 class StudentListView(generics.ListAPIView):
     model = Student
@@ -100,6 +106,7 @@ class StudentCreateView(generics.CreateAPIView):
         # Możesz zmienić serializer do zwracania szczegółowych danych
         return Response(StudentSerializer(instance).data, status=status.HTTP_201_CREATED)
 
+
 class StudentDetailView(generics.RetrieveAPIView):
     model = Student
     serializer_class = StudentSerializer
@@ -123,6 +130,7 @@ class StudentProfileView(generics.RetrieveAPIView):
             return Response(serializer.data)
         except Student.DoesNotExist:
             raise NotFound(detail="Student not found.")
+
 
 class StudentProfileUpdateView(generics.UpdateAPIView):
     """ Endpoint do aktualizacji danych studenta """
@@ -182,6 +190,7 @@ class InstructorDeleteView(generics.DestroyAPIView):
         except Instructor.DoesNotExist:
             raise NotFound(detail="Instructor not found.")
 
+
 class ClassListView(generics.ListAPIView):
     model = Class
     serializer_class = ClassDetailSerializer
@@ -194,6 +203,7 @@ class ClassListView(generics.ListAPIView):
             queryset = queryset.filter(style__icontains=style)
         return queryset
 
+
 class ClassDetailView(generics.RetrieveAPIView):
     model = Class
     serializer_class = ClassDetailSerializer
@@ -204,6 +214,7 @@ class ClassDetailView(generics.RetrieveAPIView):
         except Class.DoesNotExist:
             raise NotFound(detail="Class not found.")
 
+
 class ClassCreateView(generics.CreateAPIView):
     model = Class
     serializer_class = ClassCreateSerializer
@@ -211,6 +222,7 @@ class ClassCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save()
         return Response(ClassDetailSerializer(instance).data, status=status.HTTP_201_CREATED)
+
 
 class ClassUpdateView(generics.UpdateAPIView):
     model = Class
@@ -222,6 +234,7 @@ class ClassUpdateView(generics.UpdateAPIView):
         except Class.DoesNotExist:
             raise NotFound(detail="Class not found.")
 
+
 class ClassDeleteView(generics.DestroyAPIView):
     model = Class
 
@@ -230,6 +243,7 @@ class ClassDeleteView(generics.DestroyAPIView):
             return Class.objects.get(pk=self.kwargs["id"])
         except Class.DoesNotExist:
             raise NotFound(detail="Class not found.")
+
 
 class BookingListView(generics.ListAPIView):
     """
@@ -248,6 +262,7 @@ class BookingListView(generics.ListAPIView):
             return Booking.objects.filter(student=student)
         except Student.DoesNotExist:
             return Booking.objects.none()
+
 
 class BookingCreateView(generics.CreateAPIView):
     """
@@ -271,6 +286,7 @@ class BookingCreateView(generics.CreateAPIView):
         except Student.DoesNotExist:
             raise serializers.ValidationError("Student profile not found.")
 
+
 class BookingDetailView(generics.RetrieveAPIView):
     """
     GET: Pobierz szczegóły dotyczące konkretnej rezerwacji.
@@ -283,6 +299,7 @@ class BookingDetailView(generics.RetrieveAPIView):
         Pozwala użytkownikowi pobrać szczegóły wyłącznie jego własnych rezerwacji.
         """
         return Booking.objects.filter(student=self.request.user)
+
 
 class BookingDeleteView(generics.DestroyAPIView):
     """
@@ -302,3 +319,131 @@ class BookingDeleteView(generics.DestroyAPIView):
     def perform_destroy(self, instance):
         instance.status = "cancelled"
         instance.save()
+
+
+# Reports
+
+class AttendanceReportView(generics.ListAPIView):
+    """
+    GET: Returns attendance statistics for classes
+    """
+    serializer_class = AttendanceReportSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get_queryset(self):
+        period = self.kwargs.get('period', 'month')
+        end_date = timezone.now()
+
+        if period == 'week':
+            start_date = end_date - timedelta(days=7)
+        elif period == 'month':
+            start_date = end_date - timedelta(days=30)
+        else:  # quarter
+            start_date = end_date - timedelta(days=90)
+
+        return (
+            Booking.objects
+            .filter(class_model__start_time__range=(start_date, end_date))
+            .values(
+                'class_model__name',
+                'class_model__instructor__first_name',
+                'class_model__instructor__last_name',
+                'class_model__start_time',
+                'class_model__max_participants'
+            )
+            .annotate(
+                class_name=F('class_model__name'),
+                instructor_name=F('class_model__instructor__first_name'),
+                date=F('class_model__start_time'),
+                booked_slots=Count('id'),
+                max_slots=F('class_model__max_participants'),
+                attendance_rate=Cast(
+                    Count('id') * 100.0 / F('class_model__max_participants'),
+                    FloatField()
+                )
+            )
+            .order_by('-class_model__start_time')
+        )
+
+
+class ClassAnalyticsView(generics.RetrieveAPIView):
+    """
+    GET: Returns analytics data for classes
+    """
+    serializer_class = ClassAnalyticsSerializer
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get_object(self):
+        period = self.kwargs.get('period', 'month')
+        end_date = timezone.now()
+
+        if period == 'month':
+            start_date = end_date - timedelta(days=30)
+        elif period == 'quarter':
+            start_date = end_date - timedelta(days=90)
+        else:  # year
+            start_date = end_date - timedelta(days=365)
+
+        # Popular classes
+        popular_classes = (
+            Class.objects
+            .filter(start_time__range=(start_date, end_date))
+            .annotate(booking_count=Count('bookings'))
+            .values('name', 'booking_count')
+            .order_by('-booking_count')[:5]
+        )
+
+        # Peak hours
+        peak_hours = (
+            Class.objects
+            .filter(start_time__range=(start_date, end_date))
+            .annotate(hour=ExtractHour('start_time'))
+            .values('hour')
+            .annotate(class_count=Count('id'))
+            .order_by('hour')
+        )
+
+        # Style distribution
+        style_distribution = (
+            Class.objects
+            .filter(start_time__range=(start_date, end_date))
+            .values('style')
+            .annotate(count=Count('id'))
+            .order_by('-count')
+        )
+
+        return {
+            'popular_classes': popular_classes,
+            'peak_hours': peak_hours,
+            'style_distribution': style_distribution
+        }
+
+
+class PaymentListView(generics.ListAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentDetailView(generics.RetrieveAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentCreateView(generics.CreateAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentUpdateView(generics.UpdateAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PaymentDeleteView(generics.DestroyAPIView):
+    queryset = Payment.objects.all()
+    serializer_class = PaymentSerializer
+    permission_classes = [permissions.IsAuthenticated]

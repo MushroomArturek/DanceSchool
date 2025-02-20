@@ -25,7 +25,10 @@
           class="dashboard-nav-item">
         <i class="fas fa-credit-card"></i> Płatności
       </router-link>
-      <router-link to="/pricing" class="dashboard-nav-item">
+      <router-link
+          v-if="!authState.isLoggedIn"
+          to="/pricing"
+          class="dashboard-nav-item">
         <i class="fas fa-tags"></i> Cennik
       </router-link>
       <!--      <div class="dashboard-nav-dropdown">-->

@@ -51,31 +51,107 @@
     <Transition name="fade">
       <div v-if="showPaymentMethodModal" class="payment-modal">
         <div class="modal-content">
-          <h3>Wybierz metodę płatności</h3>
-          <div class="payment-methods">
-            <button
-                v-for="method in paymentMethods"
-                :key="method.value"
-                @click="selectPaymentMethod(method.value)"
-                :class="['payment-method-button', { 'selected': selectedMethod === method.value }]"
-            >
-              <i :class="getPaymentIcon(method.value)"></i>
-              {{ method.label }}
-            </button>
+          <!-- Payment method selection -->
+          <div v-if="!showTransferDetails">
+            <h3>Wybierz metodę płatności</h3>
+            <div class="payment-methods">
+              <button
+                  v-for="method in paymentMethods"
+                  :key="method.value"
+                  @click="selectPaymentMethod(method.value)"
+                  :class="['payment-method-button', { 'selected': selectedMethod === method.value }]"
+              >
+                <i :class="getPaymentIcon(method.value)"></i>
+                {{ method.label }}
+              </button>
+            </div>
+            <div class="modal-footer">
+              <button @click="closePaymentModal" class="cancel-button">Anuluj</button>
+              <button
+                  @click="createNewPayment"
+                  class="purchase-button"
+                  :disabled="!selectedMethod"
+              >
+                Zakup plan
+              </button>
+            </div>
           </div>
-          <div class="modal-footer">
-            <button @click="closePaymentModal" class="cancel-button">Anuluj</button>
-            <button
-                @click="createNewPayment"
-                class="purchase-button"
-                :disabled="!selectedMethod"
-            >
-              Zakup plan
-            </button>
+
+          <!-- Transfer details -->
+          <div v-else class="transfer-details">
+            <h3>Dane do płatności</h3>
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="label">Nazwa banku:</span>
+                <span class="value">{{ schoolInfo?.bank_name }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Nr konta:</span>
+                <span class="value">{{ schoolInfo?.bank_account }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Odbiorca:</span>
+                <span class="value">{{ schoolInfo?.bank_recipient }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Kwota:</span>
+                <span class="value">{{ selectedPlan?.price }} zł</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Tytuł przelewu:</span>
+                <span class="value">{{ transferTitle }}</span>
+              </div>
+              <div v-if="selectedMethod === 'blik'" class="detail-item">
+                <span class="label">Numer BLIK:</span>
+                <span class="value">{{ schoolInfo?.blik_number }}</span>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button @click="closePaymentModal" class="cta-button">Zamknij</button>
+            </div>
           </div>
         </div>
       </div>
     </Transition>
+
+     <Transition name="fade">
+    <div v-if="showTransferDetails" class="payment-modal">
+      <div class="modal-content">
+        <div class="transfer-details">
+          <h3>Dane do płatności</h3>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="label">Nazwa banku:</span>
+              <span class="value">{{ schoolInfo?.bank_name }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Nr konta:</span>
+              <span class="value">{{ schoolInfo?.bank_account }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Odbiorca:</span>
+              <span class="value">{{ schoolInfo?.bank_recipient }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Kwota:</span>
+              <span class="value">{{ currentPaymentAmount }} zł</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Tytuł przelewu:</span>
+              <span class="value">{{ currentTransferTitle }}</span>
+            </div>
+            <div v-if="currentPaymentMethod === 'blik'" class="detail-item">
+              <span class="label">Numer BLIK:</span>
+              <span class="value">{{ schoolInfo?.blik_number }}</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button @click="closeTransferDetails" class="cta-button">Zamknij</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
 
     <div class="payment-history">
       <h3>Historia płatności</h3>
@@ -96,14 +172,29 @@
           <td>{{ payment.payment_type ? translatePaymentType(payment.payment_type) : '-' }}</td>
           <td>{{ payment.amount ? `${payment.amount} zł` : '-' }}</td>
           <td>
-        <span :class="['status', payment.status]">
-          {{ translateStatus(payment.status) }}
-        </span>
+            <span :class="['status', payment.status]">
+              {{ translateStatus(payment.status) }}
+            </span>
           </td>
           <td>{{ payment.payment_method ? translatePaymentMethod(payment.payment_method) : '-' }}</td>
-          <td class="actions">
-            <!-- ... existing action buttons ... -->
-          </td>
+           <td class="actions">
+    <div class="action-buttons">
+      <button
+        v-if="payment.status === 'pending'"
+        @click="deletePayment(payment.id)"
+        class="delete-button"
+      >
+        Usuń
+      </button>
+      <button
+        v-if="['transfer', 'blik'].includes(payment.payment_method)"
+        @click="showDetailsForPayment(payment)"
+        class="details-button"
+      >
+        Szczegóły
+      </button>
+    </div>
+  </td>
         </tr>
         </tbody>
       </table>
@@ -121,6 +212,11 @@ const statusFilter = ref('');
 const showPaymentMethodModal = ref(false);
 const selectedMethod = ref(null);
 const selectedPlan = ref(null);
+const schoolInfo = ref(null);
+const showTransferDetails = ref(false);
+const currentPaymentAmount = ref(null);
+const currentPaymentMethod = ref(null);
+const currentTransferTitle = ref(null);
 const API_URL = 'http://localhost:8000';
 axios.defaults.baseURL = API_URL;
 
@@ -201,6 +297,22 @@ const fetchStudentProfile = async () => {
   }
 };
 
+const fetchSchoolInfo = async () => {
+  try {
+    const response = await axios.get('/api/school-info/', {
+      headers: {Authorization: `Bearer ${localStorage.getItem('access')}`}
+    });
+    schoolInfo.value = response.data;
+  } catch (error) {
+    console.error('Error fetching school info:', error);
+  }
+};
+
+const transferTitle = computed(() => {
+  if (!schoolInfo.value || !selectedPlan.value) return '';
+  return `${schoolInfo.value.transfer_title_prefix}${selectedPlan.value.name}`;
+});
+
 const fetchPayments = async () => {
   try {
     const response = await axios.get('/api/payments/', {
@@ -253,8 +365,13 @@ const createNewPayment = async () => {
       }
     });
     await fetchPayments();
-    showPaymentMethodModal.value = false;
-    selectedMethod.value = null;
+
+    // Show transfer details for online payments
+    if (['transfer', 'blik'].includes(selectedMethod.value)) {
+      showTransferDetails.value = true;
+    } else {
+      closePaymentModal();
+    }
   } catch (error) {
     console.error('Error creating payment:', error);
   }
@@ -263,6 +380,7 @@ const createNewPayment = async () => {
 const closePaymentModal = () => {
   showPaymentMethodModal.value = false;
   selectedMethod.value = null;
+  showTransferDetails.value = false;
   setTimeout(() => {
     selectedPlan.value = null;
   }, 300);
@@ -286,6 +404,20 @@ const getPaymentIcon = (method) => {
     'card': 'fas fa-credit-card'
   };
   return icons[method] || 'fas fa-money-bill';
+};
+
+const showDetailsForPayment = (payment) => {
+  currentPaymentAmount.value = payment.amount;
+  currentPaymentMethod.value = payment.payment_method;
+  currentTransferTitle.value = `${schoolInfo.value?.transfer_title_prefix}${translatePaymentType(payment.payment_type)}`;
+  showTransferDetails.value = true;
+};
+
+const closeTransferDetails = () => {
+  showTransferDetails.value = false;
+  currentPaymentAmount.value = null;
+  currentPaymentMethod.value = null;
+  currentTransferTitle.value = null;
 };
 
 const deletePayment = async (id) => {
@@ -333,6 +465,7 @@ const translateStatus = (status) => {
 onMounted(async () => {
   await fetchStudentProfile();
   await fetchPayments();
+  await fetchSchoolInfo();
 });
 </script>
 
@@ -464,6 +597,52 @@ onMounted(async () => {
   overflow: hidden;
 }
 
+.actions {
+  text-align: center;
+}
+
+.delete-button {
+  padding: 0.5rem 1rem;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.delete-button:hover {
+  background: #c82333;
+}
+
+.status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.failed {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status.refunded {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+
 @media (max-width: 1200px) {
   .pricing-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -586,5 +765,53 @@ onMounted(async () => {
 
 .cancel-button:hover {
   background: #5a6268;
+}
+
+.transfer-details {
+  margin-top: 1rem;
+}
+
+.details-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.detail-item {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.label {
+  color: #666;
+  font-weight: 500;
+}
+
+.value {
+  color: #333;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.details-button {
+  padding: 0.5rem 1rem;
+  background: #443ea2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.details-button:hover {
+  background: #372f8b;
 }
 </style>

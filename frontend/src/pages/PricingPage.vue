@@ -21,7 +21,7 @@
           </ul>
         </div>
         <div class="pricing-card-footer">
-          <router-link to="/register" class="cta-button">Wybierz pakiet</router-link>
+          <router-link to="/login" class="cta-button">Wybierz pakiet</router-link>
         </div>
       </div>
 
@@ -42,7 +42,7 @@
           </ul>
         </div>
         <div class="pricing-card-footer">
-          <router-link to="/register" class="cta-button">Wybierz pakiet</router-link>
+          <router-link to="/login" class="cta-button">Wybierz pakiet</router-link>
         </div>
       </div>
 
@@ -63,7 +63,7 @@
           </ul>
         </div>
         <div class="pricing-card-footer">
-          <router-link to="/register" class="cta-button">Wybierz pakiet</router-link>
+          <router-link to="/login" class="cta-button">Wybierz pakiet</router-link>
         </div>
       </div>
     </div>

@@ -152,3 +152,21 @@ class Payment(models.Model):
     valid_until = models.DateField(null=True, blank=True)
 
 
+class SchoolInfo(models.Model):
+    name = models.CharField(max_length=200)
+    address = models.TextField()
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    bank_name = models.CharField(max_length=100)
+    bank_account = models.CharField(max_length=50)
+    bank_recipient = models.CharField(max_length=200)
+    blik_number = models.CharField(max_length=20, blank=True)
+    transfer_title_prefix = models.CharField(max_length=100, default="Płatność - ")
+    tax_id = models.CharField(max_length=20, blank=True)  # NIP
+
+    class Meta:
+        verbose_name = "School Information"
+        verbose_name_plural = "School Information"
+
+    def __str__(self):
+        return self.name

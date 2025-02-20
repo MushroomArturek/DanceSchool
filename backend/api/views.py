@@ -10,12 +10,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Instructor, Class, Booking, CustomUser, Payment
+from .models import Student, Instructor, Class, Booking, CustomUser, Payment, SchoolInfo
 from .permissions import IsAdmin
 from .serializers import StudentSerializer, StudentUpdateSerializer, StudentCreateSerializer, InstructorSerializer, \
     InstructorCreateSerializer, InstructorUpdateSerializer, ClassDetailSerializer, ClassCreateSerializer, \
     ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer, \
-    AttendanceReportSerializer, ClassAnalyticsSerializer, PaymentSerializer
+    AttendanceReportSerializer, ClassAnalyticsSerializer, PaymentSerializer, SchoolInfoSerializer
 
 
 # Auth (Pierwsza klasa do serializers?????)
@@ -447,3 +447,40 @@ class PaymentDeleteView(generics.DestroyAPIView):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class SchoolInfoMixin:
+    """
+    Mixin zapewniający istnienie pojedynczej encji SchoolInfo
+    """
+
+    def get_object(self):
+        school_info = SchoolInfo.objects.first()
+        if not school_info:
+            # Create default SchoolInfo if none exists
+            school_info = SchoolInfo.objects.create(
+                name="Szkoła Tańca",
+                address="Ulica przykładowa 1",
+                phone="000000000",
+                email="kontakt@szkola.pl",
+                bank_name="Bank",
+                bank_account="00 0000 0000 0000 0000 0000 0000",
+                bank_recipient="Szkoła Tańca",
+                transfer_title_prefix="Płatność - "
+            )
+        return school_info
+
+
+class SchoolInfoView(SchoolInfoMixin, generics.RetrieveAPIView):
+    """
+    GET: Returns the school information
+    """
+    serializer_class = SchoolInfoSerializer
+
+
+class SchoolInfoUpdateView(SchoolInfoMixin, generics.UpdateAPIView):
+    """
+    PUT/PATCH: Updates the school information
+    """
+    serializer_class = SchoolInfoSerializer
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]

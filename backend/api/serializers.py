@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Class, Instructor, Booking, CustomUser, Payment
+from .models import Student, Class, Instructor, Booking, CustomUser, Payment, SchoolInfo
 
 
 # Auth
@@ -209,3 +209,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         fields = ['id', 'student', 'amount', 'payment_type', 'payment_method',
                  'status', 'created_at', 'paid_at', 'valid_until']
         read_only_fields = ['status', 'paid_at', 'valid_until']
+
+class SchoolInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolInfo
+        fields = '__all__'

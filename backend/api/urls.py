@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from .views import CustomTokenObtainPairView, RegisterUserView, StudentProfileView, StudentProfileUpdateView, \
     AttendanceReportView, ClassAnalyticsView, PaymentListView, PaymentDetailView, PaymentCreateView, PaymentUpdateView, \
-    PaymentDeleteView
+    PaymentDeleteView, SchoolInfoView, SchoolInfoUpdateView
 from .views import (
     StudentListView,
     StudentDetailView,
@@ -72,5 +72,9 @@ urlpatterns = [
     path('payments/create/', PaymentCreateView.as_view(), name='payment-create'),
     path('payments/<int:pk>/update/', PaymentUpdateView.as_view(), name='payment-update'),
     path('payments/<int:pk>/delete/', PaymentDeleteView.as_view(), name='payment-delete'),
+
+    # School info endpoints
+    path('school-info/', SchoolInfoView.as_view(), name='school-info'),
+    path('school-info/update/', SchoolInfoUpdateView.as_view(), name='school-info-update'),
 ]
 

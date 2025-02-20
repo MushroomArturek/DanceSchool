@@ -1,79 +1,89 @@
-<script setup>
-// Można dodać dowolne funkcjonalności w przyszłości, np. dynamiczne ładowanie wydarzeń
-</script>
-
 <template>
   <div class="homepage">
-    <!-- Nagłówek strony z dużym catchphrase -->
     <header class="hero-section">
       <div class="hero-overlay">
-        <h1>Zapraszamy do szkoły tańca <span>De la Salsa</span></h1>
-        <p>
-          Najlepsze miejsce, gdzie rytm łączy ludzi. Naucz się salsy, bachaty, czy tańca towarzyskiego!
-        </p>
-        <router-link to="/schedule" class="cta-button">Sprawdź grafik zajęć</router-link>
+        <h1>Szkoła Tańca <span>De la Salsa</span></h1>
+        <p>Odkryj pasję do tańca i dołącz do naszej społeczności!</p>
+        <router-link to="/schedule" class="cta-button">Zobacz grafik zajęć</router-link>
       </div>
     </header>
 
-    <!-- Sekcja z dodatkowymi informacjami -->
     <section class="about-us">
       <h2>Dlaczego warto wybrać naszą szkołę?</h2>
       <div class="features">
         <div class="feature">
-          <i class="fa-solid fa-music"></i>
-          <h3>Niezapomniana atmosfera</h3>
-          <p>
-            Oferujemy zajęcia w rodzinnej i przyjaznej atmosferze, która sprawi, że pokochasz taniec.
-          </p>
+          <i class="fas fa-star"></i>
+          <h3>Doświadczeni instruktorzy</h3>
+          <p>Nasi instruktorzy to profesjonaliści z wieloletnim doświadczeniem.</p>
         </div>
         <div class="feature">
-          <i class="fa-solid fa-user-group"></i>
-          <h3>Profesjonalni instruktorzy</h3>
-          <p>
-            Nasza kadra to doświadczeni tancerze, którzy uczynią każdy krok przyjemnością.
-          </p>
+          <i class="fas fa-users"></i>
+          <h3>Przyjazna atmosfera</h3>
+          <p>Tworzymy społeczność pasjonatów tańca.</p>
         </div>
         <div class="feature">
-          <i class="fa-solid fa-calendar-day"></i>
-          <h3>Elastyczny harmonogram</h3>
-          <p>
-            Dopasuj zajęcia do swojego planu dnia. Prowadzimy lekcje poranne, wieczorne i weekendowe.
-          </p>
+          <i class="fas fa-music"></i>
+          <h3>Różnorodne style</h3>
+          <p>Od salsy po bachate - każdy znajdzie coś dla siebie.</p>
         </div>
       </div>
     </section>
 
-    <!-- Sekcja wydarzeń lub CTA -->
     <section class="events">
-      <h2>Aktualności i wydarzenia</h2>
+      <h2>Dołącz do nas już dziś!</h2>
       <div class="event-list">
         <div class="event">
-          <h3>Warsztaty Bachaty</h3>
-          <p>Już 15 listopada startują warsztaty bachaty z naszym specjalnym gościem.</p>
-          <router-link to="/events" class="link-button">Dowiedz się więcej</router-link>
+          <h3>Zapisz się na zajęcia</h3>
+          <p>Sprawdź nasz grafik i wybierz odpowiednie zajęcia dla siebie.</p>
+          <router-link to="/schedule" class="link-button">Zobacz grafik</router-link>
         </div>
         <div class="event">
-          <h3>Wieczory taneczne</h3>
-          <p>Każdy piątek zapraszamy na wieczory taneczne. To świetna okazja na naukę i zabawę!</p>
-          <router-link to="/events" class="link-button">Sprawdź szczegóły</router-link>
-        </div>
-        <div class="event">
-          <h3>Nowy kurs tańca</h3>
-          <p>Od 1 grudnia ruszają nowe kursy tańca dla wszystkich poziomów zaawansowania.</p>
-          <router-link to="/courses" class="link-button">Zapisz się już dziś</router-link>
+          <h3>Skontaktuj się z nami</h3>
+          <p>Masz pytania? Chętnie na nie odpowiemy!</p>
+          <a :href="`tel:${schoolInfo?.phone}`" class="link-button">Zadzwoń</a>
         </div>
       </div>
     </section>
 
-    <!-- Stopka z informacjami kontaktowymi -->
-    <footer class="footer">
+    <footer v-if="schoolInfo" class="footer">
       <div class="footer-content">
-        <p>&copy; 2023 Szkoła tańca De la Salsa. Wszystkie prawa zastrzeżone.</p>
-        <p>Kontakt: kontakt@delaasalsa.pl | Telefon: +48 123 456 789</p>
+        <div class="contact-info">
+          <h3>{{ schoolInfo.name }}</h3>
+          <p><i class="fas fa-map-marker-alt"></i> {{ schoolInfo.address }}</p>
+          <p><i class="fas fa-phone"></i> {{ schoolInfo.phone }}</p>
+          <p><i class="fas fa-envelope"></i> {{ schoolInfo.email }}</p>
+        </div>
+        <div class="payment-info">
+          <h3>Dane do przelewu</h3>
+          <p><strong>{{ schoolInfo.bank_name }}</strong></p>
+          <p>{{ schoolInfo.bank_recipient }}</p>
+          <p>{{ schoolInfo.bank_account }}</p>
+          <p v-if="schoolInfo.blik_number"><strong>BLIK:</strong> {{ schoolInfo.blik_number }}</p>
+        </div>
       </div>
     </footer>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import API from '../axios';
+
+const schoolInfo = ref(null);
+
+const fetchSchoolInfo = async () => {
+  try {
+    const response = await API.get('/school-info/');
+    schoolInfo.value = response.data;
+  } catch (error) {
+    console.error('Error fetching school info:', error);
+  }
+};
+
+onMounted(() => {
+  fetchSchoolInfo();
+});
+</script>
 
 <style scoped>
 /* Stylizacja całego kontenera strony */
@@ -218,6 +228,42 @@
 }
 
 .footer-content {
-  font-size: 0.9rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.contact-info, .payment-info {
+  text-align: left;
+}
+
+.contact-info h3, .payment-info h3 {
+  color: #ff5733;
+  margin-bottom: 1rem;
+}
+
+.contact-info p, .payment-info p {
+  margin: 0.5rem 0;
+}
+
+.contact-info i {
+  width: 20px;
+  margin-right: 10px;
+  color: #ff5733;
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .contact-info, .payment-info {
+    text-align: center;
+  }
 }
 </style>

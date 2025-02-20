@@ -10,12 +10,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Instructor, Class, Booking, CustomUser, Payment, SchoolInfo
+from .models import Student, Instructor, Class, Booking, CustomUser, Payment, SchoolInfo, Attendance
 from .permissions import IsAdmin
 from .serializers import StudentSerializer, StudentUpdateSerializer, StudentCreateSerializer, InstructorSerializer, \
     InstructorCreateSerializer, InstructorUpdateSerializer, ClassDetailSerializer, ClassCreateSerializer, \
     ClassUpdateSerializer, BookingSerializer, RegisterUserSerializer, CustomTokenObtainPairSerializer, \
-    AttendanceReportSerializer, ClassAnalyticsSerializer, PaymentSerializer, SchoolInfoSerializer
+    AttendanceReportSerializer, ClassAnalyticsSerializer, PaymentSerializer, SchoolInfoSerializer, AttendanceSerializer
 
 
 # Auth (Pierwsza klasa do serializers?????)
@@ -476,6 +476,8 @@ class SchoolInfoView(SchoolInfoMixin, generics.RetrieveAPIView):
     GET: Returns the school information
     """
     serializer_class = SchoolInfoSerializer
+    permission_classes = []  # Allow public access
+
 
 
 class SchoolInfoUpdateView(SchoolInfoMixin, generics.UpdateAPIView):
@@ -484,3 +486,25 @@ class SchoolInfoUpdateView(SchoolInfoMixin, generics.UpdateAPIView):
     """
     serializer_class = SchoolInfoSerializer
     permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+
+class AttendanceListView(generics.ListCreateAPIView):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        class_id = self.kwargs['class_id']
+        return Attendance.objects.filter(class_instance_id=class_id)
+
+class AttendanceDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        class_id = self.kwargs['class_id']
+        student_id = self.kwargs['student_id']
+        return Attendance.objects.get(class_instance_id=class_id, student_id=student_id)
+
+

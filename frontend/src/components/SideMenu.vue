@@ -26,6 +26,12 @@
         <i class="fas fa-credit-card"></i> Płatności
       </router-link>
       <router-link
+          v-if="authState.isLoggedIn && authState.role === 'instructor'"
+          to="/attendance"
+          class="dashboard-nav-item">
+        <i class="fas fa-clipboard-list"></i> Lista obecności
+      </router-link>
+      <router-link
           v-if="!authState.isLoggedIn"
           to="/pricing"
           class="dashboard-nav-item">
@@ -83,14 +89,10 @@
           </div>
         </div>
 
-        <router-link to="/admin/notifications" class="dashboard-nav-item">
-          <i class="fas fa-bell"></i> Powiadomienia
-        </router-link>
-
-        <router-link to="/admin/settings" class="dashboard-nav-item">
-          <i class="fas fa-cog"></i> Ustawienia Szkoły
-        </router-link>
       </template>
+      <router-link to="/school-info" class="dashboard-nav-item">
+        <i class="fas fa-info-circle"></i> Dane szkoły
+      </router-link>
       <div class="nav-item-divider"></div>
       <!-- Przycisk Logowanie widoczny tylko dla niezalogowanych -->
       <router-link v-if="!authState.isLoggedIn" to="/login" class="dashboard-nav-item">

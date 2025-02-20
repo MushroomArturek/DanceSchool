@@ -170,3 +170,19 @@ class SchoolInfo(models.Model):
 
     def __str__(self):
         return self.name
+
+class Attendance(models.Model):
+    class_instance = models.ForeignKey('Class', on_delete=models.CASCADE, related_name='attendances')
+    student = models.ForeignKey('Student', on_delete=models.CASCADE, related_name='attendances')
+    status = models.CharField(max_length=20, choices=[
+        ('present', 'Obecny'),
+        ('absent', 'Nieobecny'),
+        ('late', 'Spóźniony')
+    ])
+    is_booked = models.BooleanField(default=True)  # True if student had a booking
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ['class_instance', 'student']

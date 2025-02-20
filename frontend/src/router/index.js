@@ -79,6 +79,17 @@ const routes = [
         component: PaymentList,
         meta: {requiresAuth: true}
     },
+    {
+        path: '/attendance',
+        name: 'Attendance',
+        component: () => import('../components/instructor/AttendanceList.vue'),
+        meta: {requiresAuth: true, roles: ['instructor']}
+    },
+    {
+        path: '/school-info',
+        name: 'SchoolInfo',
+        component: () => import('../components/SchoolInfo.vue')
+    },
 
 
 ];

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import Student, Class, Instructor, Booking, CustomUser, Payment, SchoolInfo
+from .models import Student, Class, Instructor, Booking, CustomUser, Payment, SchoolInfo, Attendance
 
 
 # Auth
@@ -214,3 +214,19 @@ class SchoolInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolInfo
         fields = '__all__'
+
+class AttendanceSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.get_full_name', read_only=True)
+    booking_status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Attendance
+        fields = ['id', 'student', 'student_name', 'status', 'is_booked',
+                 'booking_status', 'notes', 'created_at']
+
+    def get_booking_status(self, obj):
+        booking = Booking.objects.filter(
+            student=obj.student,
+            class_model=obj.class_instance
+        ).first()
+        return booking.status if booking else None

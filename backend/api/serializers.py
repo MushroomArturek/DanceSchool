@@ -80,18 +80,22 @@ class StudentUpdateSerializer(serializers.ModelSerializer):
 
 
 class StudentCreateSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), required=True)
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     email = serializers.EmailField(required=True)
     phone_number = serializers.CharField(required=True)
+    date_of_birth = serializers.DateField(required=True)
 
     class Meta:
         model = Student
         fields = [
+            "user",
             "first_name",
             "last_name",
             "email",
             "phone_number",
+            "date_of_birth",
         ]
 
 

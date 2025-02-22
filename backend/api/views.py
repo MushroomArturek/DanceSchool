@@ -45,6 +45,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class RegisterUserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = RegisterUserSerializer
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -102,9 +103,8 @@ class StudentCreateView(generics.CreateAPIView):
     serializer_class = StudentCreateSerializer
 
     def perform_create(self, serializer):
-        instance = serializer.save()
-        # Możesz zmienić serializer do zwracania szczegółowych danych
-        return Response(StudentSerializer(instance).data, status=status.HTTP_201_CREATED)
+        user = self.request.user
+        serializer.save(user=user)
 
 
 class StudentDetailView(generics.RetrieveAPIView):
@@ -147,8 +147,16 @@ class StudentProfileUpdateView(generics.UpdateAPIView):
 
 class InstructorListView(generics.ListAPIView):
     queryset = Instructor.objects.all()
+
     serializer_class = InstructorSerializer
-    permission_classes = [IsAuthenticated, IsAdmin]  # Add permissions
+    permission_classes = [IsAuthenticated,
+                          IsAdmin]  # Add permissions  class InstructorDetailView(generics.RetrieveAPIView): queryset = Instructor.objects.all() serializer_class = InstructorSerializer
+
+    def get_object(self):
+        try:
+            return Instructor.objects.get(pk=self.kwargs['id'])
+        except Instructor.DoesNotExist:
+            raise NotFound(detail="Instructor not found.")
 
 
 class InstructorDetailView(generics.RetrieveAPIView):
@@ -172,6 +180,7 @@ class InstructorCreateView(generics.CreateAPIView):
 
 class InstructorUpdateView(generics.UpdateAPIView):
     queryset = Instructor.objects.all()
+
     serializer_class = InstructorUpdateSerializer
 
     def get_object(self):
@@ -207,6 +216,7 @@ class ClassListView(generics.ListAPIView):
 class ClassDetailView(generics.RetrieveAPIView):
     model = Class
     serializer_class = ClassDetailSerializer
+    permission_classes = []  # Allow unauthenticated access
 
     def get_object(self):
         try:
@@ -218,6 +228,7 @@ class ClassDetailView(generics.RetrieveAPIView):
 class ClassCreateView(generics.CreateAPIView):
     model = Class
     serializer_class = ClassCreateSerializer
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         instance = serializer.save()
@@ -227,6 +238,7 @@ class ClassCreateView(generics.CreateAPIView):
 class ClassUpdateView(generics.UpdateAPIView):
     model = Class
     serializer_class = ClassUpdateSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         try:
@@ -237,6 +249,7 @@ class ClassUpdateView(generics.UpdateAPIView):
 
 class ClassDeleteView(generics.DestroyAPIView):
     model = Class
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         try:
@@ -293,12 +306,17 @@ class BookingDetailView(generics.RetrieveAPIView):
     """
     model = Booking
     serializer_class = BookingSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         """
-        Pozwala użytkownikowi pobrać szczegóły wyłącznie jego własnych rezerwacji.
+        Filter bookings for currently logged in user's student profile
         """
-        return Booking.objects.filter(student=self.request.user)
+        try:
+            student = Student.objects.get(user=self.request.user)
+            return Booking.objects.filter(student=student)
+        except Student.DoesNotExist:
+            return Booking.objects.none()
 
 
 class BookingDeleteView(generics.DestroyAPIView):
@@ -479,7 +497,6 @@ class SchoolInfoView(SchoolInfoMixin, generics.RetrieveAPIView):
     permission_classes = []  # Allow public access
 
 
-
 class SchoolInfoUpdateView(SchoolInfoMixin, generics.UpdateAPIView):
     """
     PUT/PATCH: Updates the school information
@@ -495,7 +512,19 @@ class AttendanceListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         class_id = self.kwargs['class_id']
+        # First verify class exists
+        if not Class.objects.filter(id=class_id).exists():
+            raise NotFound(detail="Class not found.")
         return Attendance.objects.filter(class_instance_id=class_id)
+
+    def perform_create(self, serializer):
+        class_id = self.kwargs['class_id']
+        try:
+            class_instance = Class.objects.get(id=class_id)
+            serializer.save(class_instance=class_instance)
+        except Class.DoesNotExist:
+            raise NotFound(detail="Class not found.")
+
 
 class AttendanceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Attendance.objects.all()
@@ -505,6 +534,12 @@ class AttendanceDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         class_id = self.kwargs['class_id']
         student_id = self.kwargs['student_id']
-        return Attendance.objects.get(class_instance_id=class_id, student_id=student_id)
+        try:
+            return Attendance.objects.get(
+                class_instance_id=class_id,
+                student_id=student_id
+            )
+        except Attendance.DoesNotExist:
+            raise NotFound(detail="Attendance record not found.")
 
 

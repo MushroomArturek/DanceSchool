@@ -13,7 +13,7 @@ class Role(models.TextChoices):
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
+    def create_user(self, email=None, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
@@ -151,6 +151,9 @@ class Payment(models.Model):
     paid_at = models.DateTimeField(null=True, blank=True)
     valid_until = models.DateField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.student} - {self.amount} ({self.status})"
+
 
 class SchoolInfo(models.Model):
     name = models.CharField(max_length=200)
@@ -170,6 +173,7 @@ class SchoolInfo(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Attendance(models.Model):
     class_instance = models.ForeignKey('Class', on_delete=models.CASCADE, related_name='attendances')

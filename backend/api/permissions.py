@@ -1,28 +1,28 @@
-from rest_framework.permissions import BasePermission
+from rest_framework import permissions
 
-
-class IsStudent(BasePermission):
-    """
-    Uprawnienia dla uczniów
-    """
-
+class IsStudent(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "student"
+        return (
+            request.user 
+            and request.user.is_authenticated 
+            and request.user.is_active 
+            and request.user.role == "student"
+        )
 
-
-class IsInstructor(BasePermission):
-    """
-    Uprawnienia dla instruktorów
-    """
-
+class IsInstructor(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "instructor"
+        return (
+            request.user 
+            and request.user.is_authenticated 
+            and request.user.is_active 
+            and request.user.role == "instructor"
+        )
 
-
-class IsAdmin(BasePermission):
-    """
-    Uprawnienia dla administratorów
-    """
-
+class IsAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == "admin"
+        return (
+            request.user 
+            and request.user.is_authenticated 
+            and request.user.is_active 
+            and request.user.role == "admin"
+        )

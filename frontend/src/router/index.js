@@ -80,7 +80,7 @@ const routes = [
         meta: {requiresAuth: true}
     },
     {
-        path: '/attendance',
+        path: '/attendance/:classId?',
         name: 'Attendance',
         component: () => import('../components/instructor/AttendanceList.vue'),
         meta: {requiresAuth: true, roles: ['instructor']}

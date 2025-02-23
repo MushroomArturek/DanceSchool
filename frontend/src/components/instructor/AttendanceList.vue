@@ -1,37 +1,27 @@
 <template>
- <div class="attendance-panel">
+  <div class="attendance-container">
     <h2>Lista obecności</h2>
-
-    <!-- Class selector -->
-    <div class="class-selector">
-      <select v-model="selectedClass">
+    <div class="class-selector" v-if="!classId">
+      <select v-model="selectedClass" @change="loadAttendance">
         <option value="">Wybierz zajęcia</option>
-        <option
-          v-for="classItem in instructorClasses"
-          :key="classItem.id"
-          :value="classItem.id"
-        >
-          {{ classItem.name }} - {{ formatDateTime(classItem.start_time) }}
+        <option v-for="class_ in classes" :key="class_.id" :value="class_.id">
+          {{ class_.name }} - {{ formatDateTime(class_.start_time) }}
         </option>
       </select>
     </div>
 
-    <!-- Attendance list -->
-    <div v-if="selectedClass" class="attendance-list">
+    <div v-if="selectedClass || classId" class="attendance-list">
       <div class="attendance-header">
-        <h3>Lista obecności</h3>
-        <button @click="showAddStudentModal" class="add-student-btn">
-          Dodaj studenta
-        </button>
+        <h3>{{ currentClass?.name }}</h3>
+        <p>{{ formatDateTime(currentClass?.start_time) }}</p>
       </div>
 
       <table class="attendance-table">
         <thead>
           <tr>
             <th>Student</th>
-            <th>Status rezerwacji</th>
-            <th>Obecność</th>
-            <th>Notatki</th>
+            <th>Status</th>
+            <th>Rezerwacja</th>
             <th>Akcje</th>
           </tr>
         </thead>
@@ -39,116 +29,158 @@
           <tr v-for="record in attendanceRecords" :key="record.id">
             <td>{{ record.student_name }}</td>
             <td>
-              <span :class="['booking-status', record.booking_status]">
+              <span :class="['status-badge', record.status]">
+                {{ translateStatus(record.status) }}
+              </span>
+            </td>
+            <td>
+              <span :class="['booking-badge', record.booking_status]">
                 {{ translateBookingStatus(record.booking_status) }}
               </span>
             </td>
             <td>
-              <select v-model="record.status">
-                <option value="present">Obecny</option>
-                <option value="absent">Nieobecny</option>
-                <option value="late">Spóźniony</option>
-              </select>
-            </td>
-            <td>
-              <input type="text" v-model="record.notes" placeholder="Notatki">
-            </td>
-            <td>
-              <button @click="updateAttendance(record)" class="save-btn">
-                Zapisz
-              </button>
+              <div class="action-buttons">
+                <button
+                  @click="updateStatus(record.student, 'present')"
+                  :class="['btn', record.status === 'present' ? 'active' : '']"
+                >
+                  <i class="fas fa-check"></i>
+                </button>
+                <button
+                  @click="updateStatus(record.student, 'absent')"
+                  :class="['btn', record.status === 'absent' ? 'active' : '']"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+                <button
+                  @click="updateStatus(record.student, 'late')"
+                  :class="['btn', record.status === 'late' ? 'active' : '']"
+                >
+                  <i class="fas fa-clock"></i>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-
-    <!-- Add student modal -->
-    <div v-if="showModal" class="modal">
-      <div class="modal-content">
-        <h3>Dodaj studenta do listy</h3>
-        <select v-model="newStudentId">
-          <option value="">Wybierz studenta</option>
-          <option v-for="student in availableStudents"
-                  :key="student.id"
-                  :value="student.id">
-            {{ student.first_name }} {{ student.last_name }}
-          </option>
-        </select>
-        <div class="modal-actions">
-          <button @click="addStudent" class="add-btn">Dodaj</button>
-          <button @click="showModal = false" class="cancel-btn">Anuluj</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup>
-import {ref, onMounted} from 'vue'
-import API from '../../axios.js'
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
 
-const selectedClass = ref(null)
-const instructorClasses = ref([])
-const attendanceRecords = ref([])
-const showModal = ref(false)
-const availableStudents = ref([])
-const newStudentId = ref('')
+const route = useRoute();
+const classId = ref(route.params.classId);
+const selectedClass = ref(classId.value || '');
+const classes = ref([]);
+const currentClass = ref(null);
+const attendanceRecords = ref([]);
+const API_URL = 'http://localhost:8000';
+axios.defaults.baseURL = API_URL;
 
-const fetchInstructorClasses = async () => {
-  const response = await API.get('/classes/', {
-    headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
-  })
-  instructorClasses.value = response.data
-}
+const loadClasses = async () => {
+  try {
+    const response = await axios.get('/api/classes/', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
+    });
+    classes.value = response.data;
+    if (classId.value) {
+      currentClass.value = response.data.find(c => c.id === parseInt(classId.value));
+    }
+  } catch (error) {
+    console.error('Error loading classes:', error);
+  }
+};
 
-const fetchAttendance = async () => {
-  if (!selectedClass.value) return
-  const response = await API.get(`/classes/${selectedClass.value}/attendance/`, {
-    headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
-  })
-  attendanceRecords.value = response.data
-}
+const loadAttendance = async () => {
+  const id = classId.value || selectedClass.value;
+  if (!id) return;
 
-const updateAttendanceStatus = async (studentId, status) => {
-  await API.put(`/classes/${selectedClass.value}/attendance/${studentId}/`,
-    { status },
-    { headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }}
-  )
-}
+  try {
+    const response = await axios.get(`/api/classes/${id}/attendance/`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
+    });
+    attendanceRecords.value = response.data;
 
-const addStudentToClass = async () => {
-  await API.post(`/classes/${selectedClass.value}/attendance/`,
-    { student: newStudentId.value },
-    { headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }}
-  )
-  await fetchAttendance()
-  showModal.value = false
-}
+    if (!classId.value) {
+      currentClass.value = classes.value.find(c => c.id === parseInt(selectedClass.value));
+    }
+  } catch (error) {
+    console.error('Error loading attendance:', error);
+  }
+};
 
-const showAddStudentModal = async () => {
-  const response = await API.get('/students/', {
-    headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
-  })
-  availableStudents.value = response.data
-  showModal.value = true
-}
+const updateStatus = async (studentId, status) => {
+  const id = classId.value || selectedClass.value;
+  try {
+    const response = await axios.patch(
+      `/api/classes/${id}/attendance/${studentId}/`,
+      { status },
+      { headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }}
+    );
+
+    // Update local state
+    const index = attendanceRecords.value.findIndex(record => record.student === studentId);
+    if (index !== -1) {
+      attendanceRecords.value[index] = response.data;
+    }
+  } catch (error) {
+    console.error('Error updating attendance:', error);
+  }
+};
+
+const formatDateTime = (datetime) => {
+  if (!datetime) return '';
+  return new Date(datetime).toLocaleString('pl-PL', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const translateStatus = (status) => {
+  const statuses = {
+    'present': 'Obecny',
+    'absent': 'Nieobecny',
+    'late': 'Spóźniony'
+  };
+  return statuses[status] || status;
+};
+
+const translateBookingStatus = (status) => {
+  const statuses = {
+    'confirmed': 'Potwierdzona',
+    'cancelled': 'Anulowana',
+    'waiting': 'Oczekująca',
+    null: 'Brak'
+  };
+  return statuses[status] || status;
+};
+
+watch(selectedClass, () => {
+  if (selectedClass.value) {
+    loadAttendance();
+  }
+});
 
 onMounted(() => {
-  fetchInstructorClasses()
-})
+  loadClasses();
+  if (classId.value || selectedClass.value) {
+    loadAttendance();
+  }
+});
 </script>
 
 <style scoped>
-.attendance-panel {
+.attendance-container {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-}
-
-h2 {
-  color: #443ea2;
-  margin-bottom: 2rem;
 }
 
 .class-selector {
@@ -157,44 +189,33 @@ h2 {
 
 .class-selector select {
   width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: white;
-}
-
-.attendance-list {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
+  font-size: 1rem;
 }
 
 .attendance-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.add-student-btn {
-  padding: 0.8rem 1.5rem;
-  background: #443ea2;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.attendance-header h3 {
+  margin: 0;
+  color: #443ea2;
 }
 
-.add-student-btn:hover {
-  background: #372f8b;
+.attendance-header p {
+  margin: 0.5rem 0 0;
+  color: #666;
 }
 
 .attendance-table {
   width: 100%;
   border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
 .attendance-table th,
@@ -205,135 +226,79 @@ h2 {
 }
 
 .attendance-table th {
+  background: #f8f9fa;
   font-weight: 600;
   color: #443ea2;
-  background: #f8f9fa;
 }
 
-.attendance-table select,
-.attendance-table input {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.save-btn {
-  padding: 0.5rem 1rem;
-  background: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.save-btn:hover {
-  background: #218838;
-}
-
-.booking-status {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
   font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.booking-status.confirmed {
+.status-badge.present {
   background: #d4edda;
   color: #155724;
 }
 
-.booking-status.cancelled {
+.status-badge.absent {
   background: #f8d7da;
   color: #721c24;
 }
 
-.booking-status.waiting {
+.status-badge.late {
   background: #fff3cd;
   color: #856404;
 }
 
-.attendance-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+.booking-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.booking-badge.confirmed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.booking-badge.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.booking-badge.waiting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.action-buttons {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  gap: 0.5rem;
 }
 
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
+.btn {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  background: #eee;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.modal-content select {
-  width: 100%;
-  padding: 0.8rem;
-  margin: 1rem 0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.btn:hover {
+  background: #ddd;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1.5rem;
-}
-
-.add-btn {
-  padding: 0.8rem 1.5rem;
+.btn.active {
   background: #443ea2;
   color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-.add-btn:hover {
-  background: #372f8b;
-}
-
-.cancel-btn {
-  padding: 0.8rem 1.5rem;
-  background: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.cancel-btn:hover {
-  background: #5a6268;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .attendance-panel {
-    padding: 1rem;
-  }
-
-  .attendance-table {
-    display: block;
-    overflow-x: auto;
-  }
-
-  .modal-content {
-    width: 95%;
-    margin: 0 1rem;
-  }
+.btn i {
+  font-size: 1rem;
 }
 </style>

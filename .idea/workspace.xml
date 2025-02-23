@@ -5,11 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d0813e64-47d0-4dd8-b166-26c718622b4b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/backend/api/tests/integration_tests/test_attendance_managment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/api/tests/integration_tests/test_auth_flow'.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/api/tests/integration_tests/test_booking_flow.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/api/tests/integration_tests/test_class_managment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/api/tests/integration_tests/test_instructor_management.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,11 +56,16 @@
     "Django tests.Django Tests.executor": "Run",
     "Django tests.Django tests.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_attendance_managment.AttendanceManagementTest.executor": "Run",
+    "Django tests.Test: api.tests.integration_tests.test_attendance_managment.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_auth_flow'.AuthenticationFlowTest.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_auth_flow'.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_booking_flow.executor": "Run",
+    "Django tests.Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_class_managment.ClassManagementTest.executor": "Run",
+    "Django tests.Test: api.tests.integration_tests.test_class_managment.executor": "Run",
     "Django tests.Test: api.tests.integration_tests.test_instructor_management.InstructorManagementTest.executor": "Run",
+    "Django tests.Test: api.tests.integration_tests.test_instructor_management.executor": "Run",
+    "Django tests.Test: api.tests.integration_tests.test_payment_management.PaymentManagementTest.executor": "Run",
     "Django tests.Test: api.tests.test_models.CustomUserTests.executor": "Run",
     "Django tests.Test: api.tests.test_models.executor": "Run",
     "Django tests.Test: api.tests.test_permissions.executor": "Run",
@@ -121,7 +121,7 @@
       <recent name="C:\Users\Artur\Desktop\Github\DanceSchool\frontend\src\pages" />
     </key>
   </component>
-  <component name="RunManager" selected="Django tests.Test: api.tests.integration_tests.test_attendance_managment">
+  <component name="RunManager" selected="Django tests.Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest">
     <configuration name="Test: api.tests.integration_tests.test_attendance_managment" type="DjangoTestsConfigurationType" temporary="true">
       <module name="DanceSchool" />
       <option name="ENV_FILES" value="" />
@@ -164,6 +164,27 @@
       <option name="OPTIONS" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest" type="DjangoTestsConfigurationType" temporary="true">
+      <module name="DanceSchool" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="TARGET" value="api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="Test: api.tests.integration_tests.test_class_managment" type="DjangoTestsConfigurationType" temporary="true">
       <module name="DanceSchool" />
       <option name="ENV_FILES" value="" />
@@ -185,7 +206,7 @@
       <option name="OPTIONS" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Test: api.tests.integration_tests.test_class_managment.ClassManagementTest" type="DjangoTestsConfigurationType" temporary="true">
+    <configuration name="Test: api.tests.integration_tests.test_payment_management.PaymentManagementTest" type="DjangoTestsConfigurationType" temporary="true">
       <module name="DanceSchool" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -199,28 +220,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="TARGET" value="api.tests.integration_tests.test_class_managment.ClassManagementTest" />
-      <option name="SETTINGS_FILE" value="" />
-      <option name="CUSTOM_SETTINGS" value="false" />
-      <option name="USE_OPTIONS" value="false" />
-      <option name="OPTIONS" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Test: api.tests.integration_tests.test_instructor_management" type="DjangoTestsConfigurationType" temporary="true">
-      <module name="DanceSchool" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="TARGET" value="api.tests.integration_tests.test_instructor_management" />
+      <option name="TARGET" value="api.tests.integration_tests.test_payment_management.PaymentManagementTest" />
       <option name="SETTINGS_FILE" value="" />
       <option name="CUSTOM_SETTINGS" value="false" />
       <option name="USE_OPTIONS" value="false" />
@@ -230,17 +230,17 @@
     <list>
       <item itemvalue="Django tests.Test: api.tests.integration_tests.test_attendance_managment" />
       <item itemvalue="Django tests.Test: api.tests.integration_tests.test_attendance_managment.AttendanceManagementTest" />
+      <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest" />
       <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_managment" />
-      <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_managment.ClassManagementTest" />
-      <item itemvalue="Django tests.Test: api.tests.integration_tests.test_instructor_management" />
+      <item itemvalue="Django tests.Test: api.tests.integration_tests.test_payment_management.PaymentManagementTest" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest" />
+        <item itemvalue="Django tests.Test: api.tests.integration_tests.test_payment_management.PaymentManagementTest" />
         <item itemvalue="Django tests.Test: api.tests.integration_tests.test_attendance_managment" />
         <item itemvalue="Django tests.Test: api.tests.integration_tests.test_attendance_managment.AttendanceManagementTest" />
         <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_managment" />
-        <item itemvalue="Django tests.Test: api.tests.integration_tests.test_class_managment.ClassManagementTest" />
-        <item itemvalue="Django tests.Test: api.tests.integration_tests.test_instructor_management" />
       </list>
     </recent_temporary>
   </component>
@@ -287,7 +287,7 @@
       <workItem from="1740080377343" duration="5765000" />
       <workItem from="1740152307572" duration="2638000" />
       <workItem from="1740167203339" duration="4090000" />
-      <workItem from="1740219309444" duration="15449000" />
+      <workItem from="1740219309444" duration="18617000" />
     </task>
     <servers />
   </component>
@@ -296,14 +296,16 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_InstructorViewTests.coverage" NAME="Test: api.tests.test_views.InstructorViewTests Coverage Results" MODIFIED="1740238450932" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_class_analytics_ClassAnalyticsTest.coverage" NAME="Test: api.tests.integration_tests.test_class_analytics.ClassAnalyticsTest Coverage Results" MODIFIED="1740252280472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_RegisterUserViewTests_test_register_user_success.coverage" NAME="Test: api.tests.test_views.RegisterUserViewTests.test_register_user_success Coverage Results" MODIFIED="1740222815732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_AttendanceViewTests_test_create_attendance.coverage" NAME="Test: api.tests.test_views.AttendanceViewTests.test_create_attendance Coverage Results" MODIFIED="1740241782546" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_attendance_managment_AttendanceManagementTest.coverage" NAME="Test: api.tests.integration_tests.test_attendance_managment.AttendanceManagementTest Coverage Results" MODIFIED="1740248024874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_attendance_managment_AttendanceManagementTest.coverage" NAME="Test: api.tests.integration_tests.test_attendance_managment.AttendanceManagementTest Coverage Results" MODIFIED="1740248303450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_StudentProfileViewTests.coverage" NAME="Test: api.tests.test_views.StudentProfileViewTests Coverage Results" MODIFIED="1740234411310" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_StudentSerializerTests.coverage" NAME="Test: api.tests.test_serializers.StudentSerializerTests Coverage Results" MODIFIED="1740221316880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_StudentCreateSerializerTests.coverage" NAME="Test: api.tests.test_serializers.StudentCreateSerializerTests Coverage Results" MODIFIED="1740243226343" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_AttendanceSerializerTests_test_attendance_serializer_fields.coverage" NAME="Test: api.tests.test_serializers.AttendanceSerializerTests.test_attendance_serializer_fields Coverage Results" MODIFIED="1740222370430" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_StudentSerializerTests_test_serializer_valid_data.coverage" NAME="Test: api.tests.test_serializers.StudentSerializerTests.test_serializer_valid_data Coverage Results" MODIFIED="1740221005188" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_payment_management_PaymentManagementTest.coverage" NAME="Test: api.tests.integration_tests.test_payment_management.PaymentManagementTest Coverage Results" MODIFIED="1740252243703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_AttendanceViewTests_test_attendance_nonexistent_class.coverage" NAME="Test: api.tests.test_views.AttendanceViewTests.test_attendance_nonexistent_class Coverage Results" MODIFIED="1740241733963" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_BookingViewTests.coverage" NAME="Test: api.tests.test_views.BookingViewTests Coverage Results" MODIFIED="1740240875243" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_PaymentViewTests.coverage" NAME="Test: api.tests.test_views.PaymentViewTests Coverage Results" MODIFIED="1740241362472" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -313,11 +315,13 @@
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_auth_flow_.coverage" NAME="Test: api.tests.integration_tests.test_auth_flow' Coverage Results" MODIFIED="1740247651753" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_models.coverage" NAME="Test: api.tests.test_models Coverage Results" MODIFIED="1740087511977" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Django_tests.coverage" NAME="Django tests Coverage Results" MODIFIED="1740081165765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_class_managment.coverage" NAME="Test: api.tests.integration_tests.test_class_managment Coverage Results" MODIFIED="1740248294882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_permissions.coverage" NAME="Test: api.tests.test_permissions Coverage Results" MODIFIED="1740088397796" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_CustomTokenObtainPairSerializerTests.coverage" NAME="Test: api.tests.test_serializers.CustomTokenObtainPairSerializerTests Coverage Results" MODIFIED="1740221496036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_SchoolInfoViewTests.coverage" NAME="Test: api.tests.test_views.SchoolInfoViewTests Coverage Results" MODIFIED="1740241588794" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_booking_flow.coverage" NAME="Test: api.tests.integration_tests.test_booking_flow Coverage Results" MODIFIED="1740247255920" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_StudentViewTests_test_student_create.coverage" NAME="Test: api.tests.test_views.StudentViewTests.test_student_create Coverage Results" MODIFIED="1740224733706" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_attendance_managment.coverage" NAME="Test: api.tests.integration_tests.test_attendance_managment Coverage Results" MODIFIED="1740248409123" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_AttendanceViewTests.coverage" NAME="Test: api.tests.test_views.AttendanceViewTests Coverage Results" MODIFIED="1740241949619" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_auth_flow__AuthenticationFlowTest.coverage" NAME="Test: api.tests.integration_tests.test_auth_flow'.AuthenticationFlowTest Coverage Results" MODIFIED="1740247752730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_ReportViewTests.coverage" NAME="Test: api.tests.test_views.ReportViewTests Coverage Results" MODIFIED="1740241065967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
@@ -326,9 +330,10 @@
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_models_CustomUserTests.coverage" NAME="Test: api.tests.test_models.CustomUserTests Coverage Results" MODIFIED="1740081493786" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers_RegisterUserSerializerTests.coverage" NAME="Test: api.tests.test_serializers.RegisterUserSerializerTests Coverage Results" MODIFIED="1740221448327" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_serializers.coverage" NAME="Test: api.tests.test_serializers Coverage Results" MODIFIED="1740243001669" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_class_managment_ClassManagementTest.coverage" NAME="Test: api.tests.integration_tests.test_class_managment.ClassManagementTest Coverage Results" MODIFIED="1740248009773" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_class_managment_ClassManagementTest.coverage" NAME="Test: api.tests.integration_tests.test_class_managment.ClassManagementTest Coverage Results" MODIFIED="1740248257565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$.coverage" NAME=" Coverage Results" MODIFIED="1740081208006" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_ClassViewTests.coverage" NAME="Test: api.tests.test_views.ClassViewTests Coverage Results" MODIFIED="1740239920589" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_integration_tests_test_instructor_management.coverage" NAME="Test: api.tests.integration_tests.test_instructor_management Coverage Results" MODIFIED="1740248225826" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/DanceSchool$Test__api_tests_test_views_StudentViewTests.coverage" NAME="Test: api.tests.test_views.StudentViewTests Coverage Results" MODIFIED="1740225482592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

@@ -24,7 +24,7 @@ The following ER diagram shows the data model used in the system. It presents th
 
 Below are selected screenshots showcasing the application's user interface for each user role. Each subsection presents views relevant to a specific type of user.
 
-### Gość
+### Guest
 
 _Screens accessible without logging in, such as landing page, class offer, or contact form._
 
@@ -35,7 +35,7 @@ _Screens accessible without logging in, such as landing page, class offer, or co
 ![Guest View 5](https://github.com/MushroomArturek/DanceSchool/blob/main/screenshots/Rejestracja.png?raw=true)
 ![Guest View 6](https://github.com/MushroomArturek/DanceSchool/blob/main/screenshots/logowanie.png?raw=true)
 
-### Uczeń
+### Student
 
 _Screens available to registered students, such as class enrollment, schedule, or payment status._
 
@@ -46,7 +46,7 @@ _Screens available to registered students, such as class enrollment, schedule, o
 ![Student View 5](https://github.com/MushroomArturek/DanceSchool/blob/main/screenshots/dane_do_platnosci.png?raw=true)
 ![Student View 6](https://github.com/MushroomArturek/DanceSchool/blob/main/screenshots/oczekujaca_platnosc.png?raw=true)
 
-### Instruktor
+### Instructor
 
 _Views used by instructors to manage their classes, attendance lists, and check payments._
 
